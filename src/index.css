@@ -3,49 +3,49 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-start-rgb: 255, 255, 255;
-    --background-end-rgb: 255, 255, 255;
-  }
-
   body {
-    @apply text-gray-900 bg-white min-h-screen;
-    font-family: 'Inter', system-ui, sans-serif;
-  }
-
-  h1 {
-    @apply text-3xl font-bold tracking-tight;
+    @apply antialiased text-gray-900 bg-gray-50;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   }
   
-  h2 {
-    @apply text-2xl font-semibold;
+  /* 自定义滚动条 */
+  ::-webkit-scrollbar {
+    width: 8px;
   }
   
-  h3 {
-    @apply text-xl font-semibold;
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 rounded;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500;
   }
 }
 
 @layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+  
   .btn-primary {
-    @apply px-4 py-2 bg-primary-500 text-white font-medium rounded-lg 
-           hover:bg-primary-600 transition-colors duration-200 
-           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+    @apply btn bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
   }
   
   .btn-secondary {
-    @apply px-4 py-2 bg-gray-100 text-gray-800 font-medium rounded-lg 
-           hover:bg-gray-200 transition-colors duration-200 
-           focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2;
-  }
-  
-  .card {
-    @apply bg-white rounded-xl shadow-md p-6 border border-gray-200;
+    @apply btn bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-400;
   }
   
   .input-field {
     @apply w-full px-4 py-2 border border-gray-300 rounded-lg 
-           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+           placeholder-gray-400;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-md p-6 border border-gray-200;
   }
 }
