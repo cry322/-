@@ -15,7 +15,7 @@ export function RatingDimension({ icon, label, description, value, onChange }: R
     if (rating <= 2) return '一般';
     if (rating <= 3) return '良好';
     if (rating <= 4) return '很好';
-    return '优秀';
+    return '完美';
   };
 
   const getRatingColor = (rating: number) => {

@@ -1,10 +1,9 @@
 // src/pages/Messages/MessagesView.tsx
 import { useState } from 'react';
-import { Header } from './components/Header';
 import { MessageSidebar } from './components/MessageSidebar';
 import { MessageList } from './components/MessageList';
 import { MessageDetail } from './components/MessageDetail';
-
+import { PageTitleBar } from './components/PageTitleBar';
 import { mockMessages } from './data/mockMessages';
 import { Message, MessageCategory } from './types/message';
 
@@ -70,8 +69,9 @@ export default function MessagesView() {
 
   return (
     <div className="h-screen flex flex-col">
-      <Header />
-
+      {/* 页面标题栏（不是全局 Header） */}
+        <PageTitleBar />
+      
       <div className="flex flex-1 overflow-hidden">
         <MessageSidebar
           selectedCategory={selectedCategory}

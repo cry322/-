@@ -1,22 +1,29 @@
-import { useState } from 'react';
-import { ArrowLeft, GraduationCap, FileText, Award, Lightbulb, Scale, HelpCircle, BookOpen, Users, Home, AlertCircle, Star } from 'lucide-react';
-import { StarRating } from './components/StarRating';
+import { useEffect, useState } from 'react';
+import {
+  GraduationCap,
+  FileText,
+  Award,
+  Lightbulb,
+  Scale,
+  HelpCircle,
+  BookOpen,
+  AlertCircle,
+  Star,
+} from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
+
 import { RatingDimension } from './components/RatingDimension';
 import { TagSelector } from './components/TagSelector';
 import { TextEditor } from './components/TextEditor';
 import { SuccessModal } from './components/SuccessModal';
 import { GradeRangeSelector } from './components/GradeRangeSelector';
-import { useNavigate } from 'react-router-dom';
-
-interface RatingDimension {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
-  value: number;
-}
 
 export default function WriteReviewView() {
   const navigate = useNavigate();
+  const { courseId } = useParams<{ courseId?: string }>();
+  const hasCourse = Boolean(courseId);
+
+  /* ================= 状态 ================= */
   const [ratings, setRatings] = useState<Record<string, number>>({
     overall: 0,
     teaching: 0,
@@ -29,11 +36,28 @@ export default function WriteReviewView() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [reviewText, setReviewText] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(true);
-  const [allowComments, setAllowComments] = useState(true);
+  const [gradeRange, setGradeRange] = useState('');
   const [showErrors, setShowErrors] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [gradeRange, setGradeRange] = useState('');
 
+  /* ================= 草稿恢复 ================= */
+  useEffect(() => {
+    const saved = localStorage.getItem('write-review-draft');
+    if (!saved) return;
+
+    try {
+      const draft = JSON.parse(saved);
+      setRatings(draft.ratings ?? {});
+      setSelectedTags(draft.selectedTags ?? []);
+      setReviewText(draft.reviewText ?? '');
+      setIsAnonymous(draft.isAnonymous ?? true);
+      setGradeRange(draft.gradeRange ?? '');
+    } catch {
+      console.warn('草稿解析失败');
+    }
+  }, []);
+
+  /* ================= 常量 ================= */
   const ratingDimensions = [
     { id: 'overall', label: '综合评分', icon: <Star className="w-5 h-5" />, description: '对课程整体打分' },
     { id: 'teaching', label: '教学质量', icon: <GraduationCap className="w-5 h-5" />, description: '讲课清晰度、教学方法' },
@@ -44,318 +68,174 @@ export default function WriteReviewView() {
   ];
 
   const courseTags = {
-    courseFeatures: [
-      '课程干货多',
-      '理论深入',
-      '实践性强',
-      '前沿内容',
-    ],
-    assessmentStyle: [
-      '考试难',
-      '开卷考试',
-      '无考试',
-      '无论文',
-      '考勤严格',
-      '不考勤',
-      '任务量大',
-    ],
-    teachingStyle: [
-      '讲课生动',
-      '互动性强',
-      '注重讨论',
-      '课件详细',
-      '答疑及时',
-      '给分好',
-    ],
+    courseFeatures: ['课程干货多', '理论深入', '实践性强', '前沿内容'],
+    assessmentStyle: ['考试难', '开卷考试', '无考试', '无论文', '考勤严格', '不考勤', '任务量大'],
+    teachingStyle: ['讲课生动', '互动性强', '注重讨论', '课件详细', '答疑及时', '给分好'],
   };
 
+  /* ================= 计算 ================= */
+  const hasUnratedDimensions = ratingDimensions.some(
+    (d) => !ratings[d.id] || ratings[d.id] === 0
+  );
+  const isReviewTooShort = reviewText.trim().length < 50;
+
+  const averageRating =
+    Object.values(ratings).filter((v) => v > 0).length === 0
+      ? 0
+      : Object.values(ratings).reduce((a, b) => a + b, 0) /
+        Object.values(ratings).filter((v) => v > 0).length;
+
+  /* ================= 事件 ================= */
   const handleRatingChange = (id: string, value: number) => {
-    setRatings(prev => ({ ...prev, [id]: value }));
+    setRatings((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleTagToggle = (tag: string) => {
-    setSelectedTags(prev =>
-      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
   };
 
-  const handlePublish = () => {
-    // Validate ratings
-    const unratedDimensions = ratingDimensions.filter(d => !ratings[d.id] || ratings[d.id] === 0);
-    if (unratedDimensions.length > 0) {
-      setShowErrors(true);
-      // Scroll to rating section
-      window.scrollTo({ top: 200, behavior: 'smooth' });
-      return;
-    }
-
-    if (!reviewText.trim() || reviewText.length < 50) {
-      setShowErrors(true);
-      return;
-    }
-
-    // Simulate publish
-    setShowSuccessModal(true);
-    setShowErrors(false);
+  const handleSaveDraft = () => {
+    const draft = {
+      ratings,
+      selectedTags,
+      reviewText,
+      isAnonymous,
+      gradeRange,
+      savedAt: Date.now(),
+    };
+    localStorage.setItem('write-review-draft', JSON.stringify(draft));
+    alert('草稿已保存');
   };
 
-  const hasUnratedDimensions = ratingDimensions.some(d => !ratings[d.id] || ratings[d.id] === 0);
-  const isReviewTooShort = reviewText.length < 50;
+  const handlePublish = () => {
+    if (hasUnratedDimensions || isReviewTooShort || !hasCourse) {
+      setShowErrors(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
 
-  const averageRating = Object.values(ratings).reduce((a, b) => a + b, 0) / Object.values(ratings).filter(v => v > 0).length || 0;
+    localStorage.removeItem('write-review-draft');
+    setShowErrors(false);
+    setShowSuccessModal(true);
+  };
 
+  /* ================= 渲染 ================= */
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate('/courses/101')}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span>返回</span>
-            </button>
-
-            <div className="h-6 w-px bg-gray-300"></div>
-            <h1 className="text-gray-900">发布课程评价</h1>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
       <main className="max-w-6xl mx-auto px-6 py-8">
-        {/* Error Banner */}
-        {showErrors && (hasUnratedDimensions || isReviewTooShort) && (
-          <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <div className="text-red-900 mb-1">请完善以下信息后再发布</div>
-              <ul className="text-red-700 space-y-1">
-                {hasUnratedDimensions && <li>• 请完成所有评分维度的评分</li>}
-                {isReviewTooShort && <li>• 详细评价至少需要50个字符</li>}
-              </ul>
+        {showErrors && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 flex gap-3">
+            <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+            <div className="text-red-700 text-sm">
+              {!hasCourse && <div>• 请先选择课程</div>}
+              {hasUnratedDimensions && <div>• 请完成所有评分维度</div>}
+              {isReviewTooShort && <div>• 详细评价不少于 50 字</div>}
             </div>
-            <button 
-              onClick={() => setShowErrors(false)}
-              className="text-red-600 hover:text-red-800"
+          </div>
+        )}
+
+        {/* 课程信息 */}
+        {hasCourse ? (
+          <div className="bg-white rounded-xl border p-6 mb-6 flex gap-4">
+            <div className="w-14 h-14 bg-blue-500 rounded-lg flex items-center justify-center">
+              <BookOpen className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h2 className="text-lg">课程 ID：{courseId}</h2>
+              <p className="text-gray-500">（后续可根据 courseId 获取真实课程信息）</p>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl border border-dashed p-6 mb-6 text-center">
+            <p className="text-gray-500 mb-4">请先选择要评价的课程</p>
+            <button
+              onClick={() => navigate('/courses')}
+              className="px-6 py-2 bg-blue-500 text-white rounded-lg"
             >
-              ✕
+              去选择课程
             </button>
           </div>
         )}
 
-        {/* Course Info Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
-          <div className="flex items-start gap-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
-              <BookOpen className="w-8 h-8 text-white" />
-            </div>
-            <div className="flex-1">
-              <h2 className="text-gray-900 mb-2">数据结构与算法</h2>
-              <p className="text-gray-600 mb-4">张华教授 · 2024年秋季学期</p>
-              <div className="flex flex-wrap gap-4 text-gray-600">
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-500">课程代码:</span>
-                  <span>CS101</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-500">学分:</span>
-                  <span>4.0</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-500">开课学院:</span>
-                  <span>信息科学技术学院</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-500">课程性质:</span>
-                  <span>专业必修</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Rating Form */}
+          {/* 左栏 */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Rating Dimensions Card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-6">
+            <div className="bg-white rounded-xl border p-6">
+              <div className="flex justify-between mb-4">
                 <div>
-                  <h3 className="text-gray-900 mb-1">课程评分</h3>
-                  <p className="text-gray-500">请为以下各个维度进行评分</p>
+                  <h3>课程评分</h3>
+                  <p className="text-gray-500">请为各维度评分</p>
                 </div>
                 {averageRating > 0 && (
-                  <div className="text-center">
-                    <div className="text-gray-500 mb-1">综合评分</div>
-                    <div className="text-blue-600">{averageRating.toFixed(1)}</div>
-                  </div>
+                  <div className="text-blue-600">{averageRating.toFixed(1)}</div>
                 )}
               </div>
 
-              <div className="space-y-4">
-                {ratingDimensions.map((dimension) => (
-                  <RatingDimension
-                    key={dimension.id}
-                    icon={dimension.icon}
-                    label={dimension.label}
-                    description={dimension.description}
-                    value={ratings[dimension.id]}
-                    onChange={(value) => handleRatingChange(dimension.id, value)}
-                  />
-                ))}
-              </div>
+              {ratingDimensions.map((d) => (
+                <RatingDimension
+                  key={d.id}
+                  icon={d.icon}
+                  label={d.label}
+                  description={d.description}
+                  value={ratings[d.id]}
+                  onChange={(v) => handleRatingChange(d.id, v)}
+                />
+              ))}
             </div>
 
-            {/* Tags Card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-gray-900 mb-1">选择课程标签</h3>
-              <p className="text-gray-500 mb-6">可选，帮助其他同学快速了解课程特点</p>
-
-              <div className="space-y-6">
-                <div>
-                  <h4 className="text-gray-700 mb-3">课程特点</h4>
-                  <TagSelector
-                    tags={courseTags.courseFeatures}
-                    selectedTags={selectedTags}
-                    onToggle={handleTagToggle}
-                  />
-                </div>
-
-                <div>
-                  <h4 className="text-gray-700 mb-3">考核方式</h4>
-                  <TagSelector
-                    tags={courseTags.assessmentStyle}
-                    selectedTags={selectedTags}
-                    onToggle={handleTagToggle}
-                  />
-                </div>
-
-                <div>
-                  <h4 className="text-gray-700 mb-3">教师风格</h4>
-                  <TagSelector
-                    tags={courseTags.teachingStyle}
-                    selectedTags={selectedTags}
-                    onToggle={handleTagToggle}
-                  />
-                </div>
-              </div>
+            <div className="bg-white rounded-xl border p-6 space-y-6">
+              <TagSelector
+                tags={courseTags.courseFeatures}
+                selectedTags={selectedTags}
+                onToggle={handleTagToggle}
+              />
+              <TagSelector
+                tags={courseTags.assessmentStyle}
+                selectedTags={selectedTags}
+                onToggle={handleTagToggle}
+              />
+              <TagSelector
+                tags={courseTags.teachingStyle}
+                selectedTags={selectedTags}
+                onToggle={handleTagToggle}
+              />
             </div>
 
-            {/* Grade Range Selector */}
             <GradeRangeSelector value={gradeRange} onChange={setGradeRange} />
 
-            {/* Review Text Card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-gray-900 mb-1">详细评价</h3>
-              <p className="text-gray-500 mb-4">分享你的课程体验，建议包含：课程内容、教学方式、考核体验等</p>
+            <div className="bg-white rounded-xl border p-6">
               <TextEditor value={reviewText} onChange={setReviewText} />
             </div>
 
-            {/* Settings Card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-gray-900 mb-4">发布设置</h3>
-              <div className="space-y-4">
-                <label className="flex items-center justify-between cursor-pointer group">
-                  <div>
-                    <div className="text-gray-900">匿名发布</div>
-                    <div className="text-gray-500">不显示你的个人信息</div>
-                  </div>
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      className="sr-only peer"
-                      checked={isAnonymous}
-                      onChange={(e) => setIsAnonymous(e.target.checked)}
-                    />
-                    <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-cyan-500 transition-colors"></div>
-                    <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
-                  </div>
-                </label>
-
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex items-center justify-between gap-4">
-              <button className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors">
+            <div className="flex justify-between">
+              <button
+                onClick={handleSaveDraft}
+                className="px-6 py-3 border rounded-xl"
+              >
                 保存草稿
               </button>
-              <div className="flex gap-4">
-                <button className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors">
-                  取消
-                </button>
-                <button
-                  onClick={handlePublish}
-                  className="px-8 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all shadow-sm"
-                >
-                  发布评价
-                </button>
-              </div>
+
+              <button
+                onClick={handlePublish}
+                className="px-8 py-3 bg-blue-500 text-white rounded-xl"
+              >
+                发布评价
+              </button>
             </div>
           </div>
 
-          {/* Right Column - Preview/Tips */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sticky top-24">
-              <h3 className="text-gray-900 mb-4">评价提示</h3>
-              <div className="space-y-4 text-gray-600">
-                <div className="flex gap-3">
-                  <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-blue-600">1</span>
-                  </div>
-                  <div>
-                    <div className="text-gray-900 mb-1">客观公正</div>
-                    <div className="text-gray-500">请基于真实体验进行评价，避免极端情绪化表达</div>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-blue-600">2</span>
-                  </div>
-                  <div>
-                    <div className="text-gray-900 mb-1">详细具体</div>
-                    <div className="text-gray-500">提供具体的例子和细节，帮助其他同学更好地了解课程</div>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-blue-600">3</span>
-                  </div>
-                  <div>
-                    <div className="text-gray-900 mb-1">尊重他人</div>
-                    <div className="text-gray-500">保持礼貌和尊重，避免人身攻击或不当言论</div>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-blue-600">4</span>
-                  </div>
-                  <div>
-                    <div className="text-gray-900 mb-1">全面评价</div>
-                    <div className="text-gray-500">涵盖课程内容、教学方法、作业考核等多个方面</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                <div className="flex gap-2 mb-2">
-                  <HelpCircle className="w-5 h-5 text-amber-600 flex-shrink-0" />
-                  <div className="text-amber-900">温馨提示</div>
-                </div>
-                <p className="text-amber-800">评价一经发布将无法修改，请认真填写。如需修改请联系管理员。</p>
-              </div>
-            </div>
+          {/* 右栏 */}
+          <div className="bg-white rounded-xl border p-6 h-fit sticky top-24">
+            <h3 className="mb-4">评价提示</h3>
+            <p className="text-gray-500 text-sm">
+              请基于真实体验，客观公正地进行评价。
+            </p>
           </div>
         </div>
       </main>
 
-      {/* Success Modal */}
       <SuccessModal
         isOpen={showSuccessModal}
         onClose={() => {
@@ -363,7 +243,6 @@ export default function WriteReviewView() {
           navigate('/reviews/456');
         }}
       />
-
     </div>
   );
 }
