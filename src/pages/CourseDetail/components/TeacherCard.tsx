@@ -1,4 +1,6 @@
 import { ThumbsUp, Users } from "lucide-react";
+import { Link } from 'react-router-dom';
+
 
 interface TeacherCardProps {
   title?: string;
@@ -8,7 +10,7 @@ interface TeacherCardProps {
   about?: string;
   reviewDetail?: string;
   capacity?: string;
-  likes?: string;
+  likes?: number | string;
   isPlaceholder?: boolean;
   colorIndex?: number;
 }
@@ -77,7 +79,7 @@ export function TeacherCard({
             </div>
           </div>
 
-          {/* Expand Link */}
+          {/* Expand Link，注意这里还没加跳转 */}
           <div className="text-right mt-2">
             <span className="text-xs text-indigo-600 cursor-pointer hover:text-indigo-800">
               &gt;&gt;&gt;点击展开

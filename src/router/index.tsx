@@ -1,14 +1,17 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from '../App';
 import HomePage from '../pages/Home';
-import CourseListPage from '../pages/CourseList';
+// ✅ 明确指向 index.tsx
+import CourseListPage from '../pages/CourseList/index';
 import ReviewListPage from '../pages/ReviewList';
-import CourseDetailPage from '../pages/CourseDetail';
+import CourseDetailPage from '../pages/CourseDetail'; //CourseDetailPage：这是你导入后使用的变量名，代表那个模块默认导出（export default）的 React 组件。
 import ReviewDetailPage from '../pages/ReviewDetail';
 import UserProfilePage from '../pages/UserProfile';
 import MessagesPage from '../pages/Messages';
 import WriteReviewView from '../pages/WriteReview/WriteReviewView';
 import HelpCenterPage from '../pages/HelpCenter';
+
+
 
 // 创建路由配置
 const router = createBrowserRouter([
