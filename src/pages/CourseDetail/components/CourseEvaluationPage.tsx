@@ -4,10 +4,12 @@ import { Star, ChevronRight, ThumbsUp, Users } from "lucide-react";
 import { courseApi, TeacherDTO } from "../../../services/courseApi";
 import { CourseInfoCard } from "./CourseInfoCard";
 import { TeacherCard } from "./TeacherCard";
+import { Link } from 'react-router-dom'; // 确保已安装并配置 react-router-dom
+
 
 
 interface CourseEvaluationPageProps {
-  courseId: number; // 或 string，取决于你的路由参数类型
+  courseId: number; 
 }
 export function CourseEvaluationPage({ courseId }: CourseEvaluationPageProps) {
   const [teachers, setTeachers] = useState<TeacherDTO[] | null>(null);
@@ -42,21 +44,19 @@ export function CourseEvaluationPage({ courseId }: CourseEvaluationPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <h1 className="text-center text-gray-800 mb-4">导航栏-测评详情界面,这个部分后续要和主页统一一下？</h1>
-
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <span>通识课</span>
-            <span>&gt;</span>
-            <span>通识核心课</span>
-            <span>&gt;</span>
-            <span>民主的历史与现实</span>
-          </div>
-        </div>
+        {/* Header */}
+  <div className="bg-white shadow-sm border-b border-gray-200">
+    <div className="max-w-7xl mx-auto px-6 py-4">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2 text-sm text-gray-600">
+        <Link to="/courses" className="text-gray-600 hover:text-gray-900 transition-colors">
+          通识课
+        </Link>
+        <span>&gt;</span>
+        <span>民主的历史与现实</span>
       </div>
+    </div>
+  </div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
