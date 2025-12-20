@@ -1,16 +1,15 @@
 ﻿// src/pages/HelpCenter/index.tsx
 import React from 'react';
 import { HelpCircle, Mail } from 'lucide-react';
-import HelpBreadcrumbs from '../../components/HelpBreadcrumbs';
+import Breadcrumbs from '../../components/Breadcrumbs';
 import HelpFAQSection from '../../components/HelpFAQSection';
 import helpHeaderBg from '../../assets/help_back.jpg';
 
 const HelpCenter: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 面包屑导航 */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <HelpBreadcrumbs />
+      <div className="max-w-7xl mx-auto px-4 pt-6 pb-2">
+        <Breadcrumbs items={[{ label: '帮助中心' }]} />
       </div>
 
       {/* 页面头部 - 调整为py-16 */}
