@@ -8,7 +8,7 @@ interface TeacherCardProps {
   about?: string;
   reviewDetail?: string;
   capacity?: string;
-  likes?: string;
+  likes?: number;
   isPlaceholder?: boolean;
   colorIndex?: number;
 }
