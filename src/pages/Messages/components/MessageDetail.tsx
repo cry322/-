@@ -29,17 +29,34 @@ export function MessageDetail({ message, onDelete, onReply, onMarkAsRead }: Mess
   if (!message) {
     return (
       <div className="flex-1 bg-gray-50 flex items-center justify-center">
-        <div className="text-center text-gray-400">
-          <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-            <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        <div className="text-center">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white shadow flex items-center justify-center">
+            <svg
+              className="w-10 h-10 text-gray-300"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8"
+              />
             </svg>
           </div>
-          <p>请选择一条消息查看详情</p>
+
+          <div className="text-gray-600 font-medium">
+            暂未选择消息
+          </div>
+          <div className="text-gray-400 text-sm mt-1">
+            点击左侧列表查看消息详情
+          </div>
         </div>
       </div>
     );
   }
+
 
   const handleSendReply = () => {
     if (replyContent.trim()) {

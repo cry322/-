@@ -7,7 +7,7 @@ import CourseDetailPage from '../pages/CourseDetail';
 import ReviewDetailPage from '../pages/ReviewDetail';
 import UserProfilePage from '../pages/UserProfile';
 import MessagesPage from '../pages/Messages';
-import WriteReviewPage from '../pages/WriteReview';
+import WriteReviewView from '../pages/WriteReview/WriteReviewView';
 import HelpCenterPage from '../pages/HelpCenter';
 
 // 创建路由配置
@@ -44,9 +44,22 @@ const router = createBrowserRouter([
         path: 'messages',
         element: <MessagesPage />,
       },
+      
+      // ✅ 写测评（首页入口：无课程）
       {
         path: 'write-review',
-        element: <WriteReviewPage />,
+        element: <WriteReviewView />,
+      },
+
+      // ✅ 写测评（课程详情入口：已选课程）
+      {
+        path: 'courses/:courseId/write-review',
+        element: <WriteReviewView />,
+      },
+
+      {
+        path: '/courses/:courseId/write-review',
+        element: <WriteReviewView />,
       },
       {
         path: 'help',
