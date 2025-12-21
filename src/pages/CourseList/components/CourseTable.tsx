@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
+
 import { Star } from 'lucide-react';
 
 interface Course {
@@ -13,28 +15,22 @@ interface Course {
 
 interface CourseTableProps {
   courses: Course[];
+  onSortByRating?: (courses: Course[]) => Course[]; // 新增：排序回调
 }
 
-export function CourseTable({ courses }: CourseTableProps) {
-  const [displayCourses, setDisplayCourses] = useState<Course[]>([]);
+export function CourseTable({ courses, onSortByRating }: CourseTableProps) {
+  const navigate = useNavigate(); // 👈 获取导航函数
+  const [sortDirection, setSortDirection] = useState<'desc' | 'asc'>('desc');
 
-  // 修复点1：仅在组件初始化时初始化数据，而非每次courses变化都重置
-  // 移除原有的useEffect，替换为仅执行一次的初始化逻辑
-  useEffect(() => {
-    setDisplayCourses([...courses]);
-  }, []); // 空依赖：仅组件挂载时执行一次
-
-  // 修复点2：排序逻辑增加「数字类型校验」，避免非数字rating导致排序异常
   const handleSortByRating = () => {
-    // 先复制数组，避免修改原数据
-    const sorted = [...displayCourses].sort((a, b) => {
-      // 强制转为数字，避免字符串/小数等异常情况
-      const ratingA = Number(a.rating);
-      const ratingB = Number(b.rating);
-      // 降序排序（高分在前）
-      return ratingB - ratingA;
-    });
-    setDisplayCourses(sorted);
+    if (!onSortByRating) return;
+    const sortedCourses = onSortByRating([...courses]);
+    setSortDirection(prev => prev === 'desc' ? 'asc' : 'desc');
+  };
+
+  // 👇 点击行跳转到课程详情
+  const handleRowClick = (id: number) => {
+    navigate(`/course/${id}`);
   };
 
   const renderStars = (rating: number) => {
@@ -53,17 +49,15 @@ export function CourseTable({ courses }: CourseTableProps) {
 
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-purple-100 shadow-sm overflow-hidden">
-      {/* 排序按钮 */}
       <div className="flex justify-end p-4 border-b border-purple-100">
         <button
           onClick={handleSortByRating}
           className="px-4 py-2 bg-gradient-to-r from-purple-100 to-blue-100 hover:from-purple-200 hover:to-blue-200 rounded-lg transition-all"
         >
-          按综合评分排序
+          按综合评分排序（{sortDirection === 'desc' ? '降序' : '升序'}）
         </button>
       </div>
 
-      {/* 表格容器 */}
       <div className="overflow-auto max-h-[calc(100vh-280px)]">
         <table className="w-full">
           <thead className="bg-gradient-to-r from-purple-50 to-blue-50 border-b border-purple-100 sticky top-0 z-10">
@@ -77,17 +71,18 @@ export function CourseTable({ courses }: CourseTableProps) {
             </tr>
           </thead>
           <tbody>
-            {displayCourses.length === 0 ? (
+            {courses.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
                   暂无符合条件的课程
                 </td>
               </tr>
             ) : (
-              displayCourses.map((course, index) => (
+              courses.map((course, index) => (
                 <tr
-                  key={course.id} // 必须用唯一id作为key，避免排序后DOM渲染异常
-                  className={index % 2 === 0 ? 'bg-white/50' : 'bg-purple-50/30 hover:bg-purple-50/50'}
+                  key={course.id}
+                  onClick={() => handleRowClick(course.id)} // 👈 添加点击事件
+                  className={`${index % 2 === 0 ? 'bg-white/50' : 'bg-purple-50/30 hover:bg-purple-50/50'} cursor-pointer`} // 👈 添加 cursor-pointer 样式
                 >
                   <td className="px-6 py-4 text-gray-700">{course.courseNo}</td>
                   <td className="px-6 py-4 text-gray-800">{course.courseName}</td>
