@@ -1,7 +1,9 @@
-﻿import { useState, MouseEvent } from 'react';
+﻿import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 
 const UserProfilePage = () => {
   const [activePage, setActivePage] = useState<string>('reviews-page');
+  const navigate = useNavigate();
 
   // 显示指定页面
   const showPage = (pageId: string) => {
@@ -10,51 +12,40 @@ const UserProfilePage = () => {
 
   // 查看测评详情
   const viewReviewDetail = (reviewId: string) => {
-    alert(`跳转到测评详情页面，测评ID: ${reviewId}`);
-    // 实际应用中这里应该跳转到测评详情页
-    // window.location.href = `/review-detail.html?id=${reviewId}`;
+    navigate(`/reviews/${reviewId}`);
   };
 
   // 查看课程详情
   const viewCourseDetail = (courseCode: string) => {
-    alert(`跳转到课程详情页面，课程代码: ${courseCode}`);
-    // 实际应用中这里应该跳转到课程详情页
-    // window.location.href = `/course-detail.html?code=${courseCode}`;
+    navigate(`/courses/${courseCode}`);
   };
 
-  // 查看我的测评
-  const viewMyReview = (courseCode: string) => {
-    alert(`查看我在课程 ${courseCode} 的测评`);
-    // 实际应用中这里可以跳转到对应的测评页面
+  // 查看我的测评 - 从路由中获取用户ID，这里假设用户已登录
+  const viewMyReview = (reviewId: string) => {
+    navigate(`/reviews/${reviewId}`);
   };
 
   // 写测评
   const writeReview = (courseCode: string) => {
-    alert(`为课程 ${courseCode} 写测评`);
-    // 实际应用中这里应该跳转到写测评页面
-    // window.location.href = `/write-review.html?course=${courseCode}`;
+    navigate(`/courses/${courseCode}/write-review`);
   };
 
   // 查看评论来源
   const viewCommentSource = (commentId: string) => {
-    alert(`跳转到评论所在的测评页面，评论ID: ${commentId}`);
-    // 实际应用中这里应该跳转到包含该评论的测评详情页
+    // 假设评论ID就是测评ID，跳转到对应的测评详情页
+    navigate(`/reviews/${commentId}`);
   };
 
   // 查看收藏的测评
   const viewFavoriteReview = (reviewId: string) => {
-    alert(`查看收藏的测评详情，测评ID: ${reviewId}`);
-    // 实际应用中这里应该跳转到测评详情页
+    navigate(`/reviews/${reviewId}`);
   };
 
-  // 防止事件冒泡
-  const stopPropagation = (
-    e: MouseEvent<HTMLButtonElement>, 
-    callback: (...args: any[]) => void, 
-    ...args: any[]
-  ) => {
-    e.stopPropagation();
-    callback(...args);
+  // 编辑资料
+  const editProfile = () => {
+    // 这里可以跳转到编辑资料页面，如果没有专门的页面，可以显示一个模态框
+    alert('编辑资料功能开发中...');
+    // 或者 navigate('/profile/edit');
   };
 
   return (
@@ -294,7 +285,12 @@ const UserProfilePage = () => {
                 <div>
                   <h1 className="mb-2">kiki</h1>
                 </div>
-                <button className="btn btn-secondary">编辑资料</button>
+                <button 
+                  className="btn btn-secondary"
+                  onClick={editProfile}
+                >
+                  编辑资料
+                </button>
               </div>
               <p className="text-gray-700 mb-6">热爱学习，乐于分享课程体验。希望通过我的测评帮助大家选到合适的课程！</p>
               
@@ -309,11 +305,11 @@ const UserProfilePage = () => {
                   <div className="stat-label">选修课程</div>
                 </div>
                 <div className="stat-card">
-                  <div className="stat-value">4</div>
+                  <div className="stat-value">2</div>
                   <div className="stat-label">发表评论</div>
                 </div>
                 <div className="stat-card">
-                  <div className="stat-value">5</div>
+                  <div className="stat-value">2</div>
                   <div className="stat-label">收藏内容</div>
                 </div>
               </div>
@@ -327,25 +323,25 @@ const UserProfilePage = () => {
             className={`tab ${activePage === 'reviews-page' ? 'active' : ''}`} 
             onClick={() => showPage('reviews-page')}
           >
-            我的测评 (3)
+            我的测评
           </button>
           <button 
             className={`tab ${activePage === 'courses-page' ? 'active' : ''}`} 
             onClick={() => showPage('courses-page')}
           >
-            我的课程 (5)
+            我的课程
           </button>
           <button 
             className={`tab ${activePage === 'comments-page' ? 'active' : ''}`} 
             onClick={() => showPage('comments-page')}
           >
-            我的评论 (4)
+            我的评论
           </button>
           <button 
             className={`tab ${activePage === 'favorites-page' ? 'active' : ''}`} 
             onClick={() => showPage('favorites-page')}
           >
-            收藏 (5)
+            我的收藏 
           </button>
         </div>
 
@@ -421,14 +417,20 @@ const UserProfilePage = () => {
                 <button 
                   className="btn btn-primary" 
                   style={{ flex: 1 }}
-                  onClick={(e) => stopPropagation(e, viewCourseDetail, '3230900')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    viewCourseDetail('3230900');
+                  }}
                 >
                   查看课程
                 </button>
                 <button 
                   className="btn btn-secondary" 
                   style={{ flex: 1 }}
-                  onClick={(e) => stopPropagation(e, viewMyReview, '3230900')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    viewMyReview('3230900');
+                  }}
                 >
                   查看我的测评
                 </button>
@@ -451,14 +453,20 @@ const UserProfilePage = () => {
                 <button 
                   className="btn btn-primary" 
                   style={{ flex: 1 }}
-                  onClick={(e) => stopPropagation(e, viewCourseDetail, '1233170')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    viewCourseDetail('1233170');
+                  }}
                 >
                   查看课程
                 </button>
                 <button 
                   className="btn btn-secondary" 
                   style={{ flex: 1 }}
-                  onClick={(e) => stopPropagation(e, viewMyReview, '1233170')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    viewMyReview('1233170');
+                  }}
                 >
                   查看我的测评
                 </button>
@@ -481,14 +489,20 @@ const UserProfilePage = () => {
                 <button 
                   className="btn btn-primary" 
                   style={{ flex: 1 }}
-                  onClick={(e) => stopPropagation(e, viewCourseDetail, '2939991')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    viewCourseDetail('2939991');
+                  }}
                 >
                   查看课程
                 </button>
                 <button 
                   className="btn btn-secondary" 
                   style={{ flex: 1 }}
-                  onClick={(e) => stopPropagation(e, viewMyReview, '2939991')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    viewMyReview('2939991');
+                  }}
                 >
                   查看我的测评
                 </button>
@@ -511,14 +525,20 @@ const UserProfilePage = () => {
                 <button 
                   className="btn btn-primary" 
                   style={{ flex: 1 }}
-                  onClick={(e) => stopPropagation(e, viewCourseDetail, '2039130')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    viewCourseDetail('2039130');
+                  }}
                 >
                   查看课程
                 </button>
                 <button 
                   className="btn btn-outline" 
                   style={{ flex: 1 }}
-                  onClick={(e) => stopPropagation(e, writeReview, '2039130')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    writeReview('2039130');
+                  }}
                 >
                   写测评
                 </button>
@@ -541,14 +561,20 @@ const UserProfilePage = () => {
                 <button 
                   className="btn btn-primary" 
                   style={{ flex: 1 }}
-                  onClick={(e) => stopPropagation(e, viewCourseDetail, '2930187')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    viewCourseDetail('2930187');
+                  }}
                 >
                   查看课程
                 </button>
                 <button 
                   className="btn btn-outline" 
                   style={{ flex: 1 }}
-                  onClick={(e) => stopPropagation(e, writeReview, '2930187')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    writeReview('2930187');
+                  }}
                 >
                   写测评
                 </button>

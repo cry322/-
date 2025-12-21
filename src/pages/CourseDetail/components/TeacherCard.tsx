@@ -1,8 +1,8 @@
 import { ThumbsUp, Users } from "lucide-react";
 import { Link } from 'react-router-dom';
 
-
 interface TeacherCardProps {
+  id?: string; // 👈 新增：用于跳转的唯一标识
   title?: string;
   subtitle?: string;
   description?: string;
@@ -25,6 +25,7 @@ const cardColors = [
 ];
 
 export function TeacherCard({
+  id,
   title,
   subtitle,
   description,
@@ -79,9 +80,9 @@ export function TeacherCard({
             </div>
           </div>
 
-          {/* Expand Link，注意这里还没加跳转 */}
+          {/* Expand Link */}
           <div className="text-right mt-2">
-            <span className="text-xs text-indigo-600 cursor-pointer hover:text-indigo-800">
+            <span className="text-xs text-gray-400 cursor-not-allowed">
               &gt;&gt;&gt;点击展开
             </span>
           </div>
@@ -129,9 +130,15 @@ export function TeacherCard({
 
         {/* Expand Link */}
         <div className="text-right mt-2">
-          <span className="text-xs text-indigo-600 cursor-pointer hover:text-indigo-800">
-            &gt;&gt;&gt;点击展开
-          </span>
+          {id ? (
+            <Link to={`/reviews/${id}`} className="text-xs text-indigo-600 hover:text-indigo-800">
+              &gt;&gt;&gt;点击展开
+            </Link>
+          ) : (
+            <span className="text-xs text-gray-400 cursor-not-allowed">
+              &gt;&gt;&gt;暂无详情
+            </span>
+          )}
         </div>
       </div>
     </div>
