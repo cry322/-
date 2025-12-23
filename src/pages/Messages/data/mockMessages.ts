@@ -18,8 +18,8 @@ export const mockMessages: Message[] = [
     isRead: false,
     course: {
       id: 'c1',
-      name: '数据结构与算法',
-      code: 'CS201'
+      name: '心理学导论',
+      code: '1630079'
     },
     relatedUrl: '/courses/cs201'
   },

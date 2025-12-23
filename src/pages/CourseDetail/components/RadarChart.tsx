@@ -9,7 +9,7 @@ export interface RadarChartProps {
 }
 
 export function RadarChart({
-  data = [0.4, 1, 0.8, 1, 0.6],           // 默认数据（你的“民主的历史与现实”）
+  data = [0.4, 1, 0.8, 1, 0.6],           // 默认数据
   labels = ["任务量", "听课", "难度", "收获", "给分"],
   width = 240,
   height = 240,

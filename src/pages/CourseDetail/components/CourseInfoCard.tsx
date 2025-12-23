@@ -35,11 +35,11 @@ export function CourseInfoCard() {
     <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
       {/* Course Name as Main Title */}
       <div className="text-center space-y-2 pb-4 border-b-2 border-gradient-to-r from-blue-400 to-purple-400">
-        <h2 className="text-gray-800 text-2xl">民主的历史与现实</h2>
+        <h2 className="text-gray-800 text-2xl">心理学导论</h2>
         <div className="flex items-center justify-center gap-2 text-gray-600">
           <span className="text-sm">开课院系：</span>
           <span className="text-sm bg-gradient-to-r from-blue-50 to-indigo-50 px-3 py-1 rounded-full">
-            国际关系学院
+            心理认知与科学学院
           </span>
         </div>
       </div>
@@ -62,7 +62,7 @@ export function CourseInfoCard() {
         <div className="grid grid-cols-3 gap-3 text-center">
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-3">
             <div className="text-gray-600 text-sm mb-1">学分</div>
-            <div className="text-blue-600">3学分</div>
+            <div className="text-blue-600">2学分</div>
           </div>
           <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-3">
             <div className="text-gray-600 text-sm mb-1">评分方式</div>

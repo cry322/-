@@ -1,4 +1,4 @@
-import { useState } from 'react';
+
 import { useNavigate } from 'react-router-dom'; 
 
 import { Star } from 'lucide-react';
@@ -15,24 +15,17 @@ interface Course {
 
 interface CourseTableProps {
   courses: Course[];
-  onSortByRating?: (courses: Course[]) => Course[]; // 新增：排序回调
+  onSort?: () => void; // 简化的排序回调
+  sortDirection?: 'asc' | 'desc' | null; // 当前排序方向
 }
 
-export function CourseTable({ courses, onSortByRating }: CourseTableProps) {
-  const navigate = useNavigate(); // 👈 获取导航函数
-  const [sortDirection, setSortDirection] = useState<'desc' | 'asc'>('desc');
-
-  const handleSortByRating = () => {
-    if (!onSortByRating) return;
-    const sortedCourses = onSortByRating([...courses]);
-    setSortDirection(prev => prev === 'desc' ? 'asc' : 'desc');
+export function CourseTable({ courses, onSort, sortDirection }: CourseTableProps) {
+  const navigate = useNavigate();
+  
+  const handleRowClick = (courseId: number) => {
+    navigate(`/courses/${courseId}`);
   };
-
-  // 👇 点击行跳转到课程详情
-  const handleRowClick = (id: number) => {
-    navigate(`/course/${id}`);
-  };
-
+  
   const renderStars = (rating: number) => {
     return (
       <div className="flex gap-1">
@@ -47,15 +40,23 @@ export function CourseTable({ courses, onSortByRating }: CourseTableProps) {
     );
   };
 
+  // 获取排序按钮文本
+  const getSortButtonText = () => {
+    if (!sortDirection) return '按综合评分排序';
+    return `按综合评分排序（${sortDirection === 'desc' ? '降序' : '升序'}）`;
+  };
+
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-purple-100 shadow-sm overflow-hidden">
       <div className="flex justify-end p-4 border-b border-purple-100">
-        <button
-          onClick={handleSortByRating}
-          className="px-4 py-2 bg-gradient-to-r from-purple-100 to-blue-100 hover:from-purple-200 hover:to-blue-200 rounded-lg transition-all"
-        >
-          按综合评分排序（{sortDirection === 'desc' ? '降序' : '升序'}）
-        </button>
+        {onSort && (
+          <button
+            onClick={onSort}
+            className="px-4 py-2 bg-gradient-to-r from-purple-100 to-blue-100 hover:from-purple-200 hover:to-blue-200 rounded-lg transition-all"
+          >
+            {getSortButtonText()}
+          </button>
+        )}
       </div>
 
       <div className="overflow-auto max-h-[calc(100vh-280px)]">
@@ -81,15 +82,20 @@ export function CourseTable({ courses, onSortByRating }: CourseTableProps) {
               courses.map((course, index) => (
                 <tr
                   key={course.id}
-                  onClick={() => handleRowClick(course.id)} // 👈 添加点击事件
-                  className={`${index % 2 === 0 ? 'bg-white/50' : 'bg-purple-50/30 hover:bg-purple-50/50'} cursor-pointer`} // 👈 添加 cursor-pointer 样式
+                  onClick={() => handleRowClick(course.id)}
+                  className={`${index % 2 === 0 ? 'bg-white/50' : 'bg-purple-50/30 hover:bg-purple-50/50'} cursor-pointer transition-colors duration-150 hover:bg-purple-100/30`}
                 >
                   <td className="px-6 py-4 text-gray-700">{course.courseNo}</td>
-                  <td className="px-6 py-4 text-gray-800">{course.courseName}</td>
+                  <td className="px-6 py-4 text-gray-800 font-medium">{course.courseName}</td>
                   <td className="px-6 py-4 text-gray-700">{course.credits}</td>
                   <td className="px-6 py-4 text-gray-700">{course.teacher}</td>
                   <td className="px-6 py-4 text-gray-600">{course.department}</td>
-                  <td className="px-6 py-4">{renderStars(course.rating)}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      {renderStars(course.rating)}
+                      <span className="text-sm text-gray-600">({course.rating})</span>
+                    </div>
+                  </td>
                 </tr>
               ))
             )}
