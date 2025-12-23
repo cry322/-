@@ -48,7 +48,7 @@ export function TeacherCard({
         <div className="bg-white rounded-lg p-4 h-full flex flex-col">
           {/* Header */}
           <div className="text-center mb-3 pb-2 border-b-2 border-orange-400">
-            <h3 className="text-gray-800">毛利华</h3>
+            <h3 className="text-gray-800">开课教师：毛利华</h3>
           </div>
 
           {/* Rating - Single */}
@@ -96,7 +96,7 @@ export function TeacherCard({
       <div className="bg-white rounded-lg p-4 h-full flex flex-col">
         {/* Header */}
         <div className="text-center mb-3 pb-2 border-b-2 border-orange-400">
-          <h3 className="text-gray-800">{title}</h3>
+          <h3 className="text-gray-800">开课教师：毛利华</h3>
         </div>
 
         {/* Rating - Single */}

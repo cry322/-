@@ -16,15 +16,15 @@ export function Sidebar() {
           </div>
           <div className="space-y-3">
             {[
-              { name: "数据结构与算法", count: 45 },
-              { name: "微观经济学", count: 38 },
-              { name: "操作系统原理", count: 32 },
-              { name: "大学英语(3)", count: 28 },
-              { name: "高等数学 A(1)", count: 25 },
+              { name: "信息架构设计与实践", count: 45 },
+              { name: "数据结构与算法", count: 38 },
+              { name: "心理学导论", count: 32 },
+              { name: "英美词汇", count: 28 },
+              { name: "地震概论", count: 25 },
             ].map((item, index) => (
               <Link
                 key={index}
-                to="/courses"
+                to="/courses/:id"
                 className="flex items-center justify-between p-2 hover:bg-gray-50 rounded cursor-pointer transition-colors"
               >
                 <div className="flex items-center gap-2">
