@@ -1,7 +1,20 @@
 ﻿import { FilterSidebar } from './components/FilterSidebar';
 import { SearchBar } from './components/SearchBar';
 import { CourseTable } from './components/CourseTable';
-import { useState, useEffect } from 'react';
+import { useState,useMemo} from 'react';
+import courseHeaderBg from '../../assets/course-back.jpg'; // 请根据实际路径调整
+import { Home, ChevronRight } from "lucide-react";
+import { Link } from 'react-router-dom';
+
+interface Course {
+  id: number;
+  courseNo: string;
+  courseName: string;
+  credits: number;
+  teacher: string;
+  department: string;
+  rating: number;
+}
 
 
 // 模拟课程数据
@@ -60,23 +73,18 @@ const mockCourses = [
   { id: 59, courseNo: '1034030', courseName: '魅力化学', credits: 2, teacher: '黄建彬', department: '化学与分子工程学院', rating: 3 },
 ];
 
+// CourseList.tsx
 export default function CourseList() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCredits, setSelectedCredits] = useState('all');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
-  const [courses, setCourses] = useState(mockCourses);
-  // 新增：排序状态（默认未排序）
-  const [sortType, setSortType] = useState<'none' | 'desc' | 'asc'>('none');
+  const [courses] = useState(mockCourses);
+  const [sortConfig, setSortConfig] = useState<{
+    field: keyof Course;  // 限制为 Course 的键
+    direction: 'asc' | 'desc';
+  } | null>(null);
 
-  // 预留后端接口位置（不变）
-  useEffect(() => {
-    async function fetchCourses() {
-      setCourses(mockCourses);
-    }
-    fetchCourses();
-  }, []);
-
-  // 筛选逻辑（不变）
+  // 筛选逻辑
   const filteredCourses = courses.filter(course => {
     const matchesSearch =
       course.courseName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -92,43 +100,181 @@ export default function CourseList() {
     return matchesSearch && matchesCredits && matchesDepartment;
   });
 
-  // 新增：排序逻辑（由父组件处理）
-  const handleSortByRating = (coursesToSort: typeof filteredCourses) => {
-    const sorted = [...coursesToSort].sort((a, b) => {
-      const ratingA = Number(a.rating);
-      const ratingB = Number(b.rating);
-      // 根据当前排序方向决定升序/降序
-      if (sortType === 'desc' || sortType === 'none') {
-        setSortType('asc');
-        return ratingB - ratingA; // 首次点击：降序
-      } else {
-        setSortType('desc');
-        return ratingA - ratingB; // 再次点击：升序
+  // 排序逻辑
+  const sortedCourses = useMemo(() => {
+    if (!sortConfig) return filteredCourses;
+    
+    return [...filteredCourses].sort((a, b) => {
+      let aValue = a[sortConfig.field as keyof Course];
+      let bValue = b[sortConfig.field as keyof Course];
+      
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
       }
+      
+      if (aValue < bValue) {
+        return sortConfig.direction === 'asc' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return sortConfig.direction === 'asc' ? 1 : -1;
+      }
+      return 0;
     });
-    return sorted;
+  }, [filteredCourses, sortConfig]);
+
+  // 处理排序点击
+  const handleSort = (field: keyof Course) => {
+    setSortConfig(prevConfig => {
+      // 如果点击的是新字段，默认降序
+      if (!prevConfig || prevConfig.field !== field) {
+        return { field, direction: 'desc' };
+      }
+      
+      // 如果已经按这个字段排序，切换方向
+      if (prevConfig.direction === 'desc') {
+        return { field, direction: 'asc' };
+      }
+      
+      // 如果已经是升序，取消排序
+      return null;
+    });
   };
 
   return (
-    <div className="flex">
-      <FilterSidebar
-        selectedCredits={selectedCredits}
-        setSelectedCredits={setSelectedCredits}
-        selectedDepartment={selectedDepartment}
-        setSelectedDepartment={setSelectedDepartment}
-      />
+    <div className="min-h-screen bg-gray-50">
+      {/* 面包屑导航 - 放在头部区域上面 */}
+      <div className="max-w-7xl mx-auto px-4 pt-6 pb-2">
+        <nav className="flex items-center text-sm">
+          <Link 
+            to="/" 
+            className="flex items-center text-gray-600 hover:text-blue-600 transition"
+          >
+            <Home className="w-4 h-4 mr-1" />
+            首页
+          </Link>
+          <ChevronRight className="w-4 h-4 mx-2 text-gray-400" />
+          <span className="text-blue-600 font-medium">课程库</span>
+        </nav>
+      </div>
 
-      <main className="flex-1 p-8">
-        <SearchBar
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-        />
-        {/* 传递筛选后的课程 + 排序回调 */}
-        <CourseTable 
-          courses={filteredCourses} 
-          onSortByRating={handleSortByRating} 
-        />
-      </main>
+      {/* 页面头部 - 使用背景图片 */}
+      <div 
+        className="relative text-white py-12 md:py-16"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${courseHeaderBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
+          <h1 className="text-3xl md:text-4xl font-bold mb-3">课程库</h1>
+          <p className="text-xl text-gray-200">探索北大丰富课程，找到适合你的学习方向</p>
+         
+          {/* 可以添加一些统计信息
+          <div className="mt-8 flex flex-wrap justify-center gap-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold">{courses.length}</div>
+              <div className="text-gray-300">总课程数</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold">
+                {(courses.reduce((sum, course) => sum + course.rating, 0) / courses.length).toFixed(1)}
+              </div>
+              <div className="text-gray-300">平均评分</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold">
+                {new Set(courses.map(c => c.department)).size}
+              </div>
+              <div className="text-gray-300">开课院系</div>
+            </div>
+          </div> */}
+        </div>
+        
+        {/* 添加一个渐变覆盖增强可读性 */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/20"></div>
+      </div>
+
+      {/* 原来的主要内容区域 */}
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* 筛选侧边栏 */}
+          <div className="lg:w-1/4">
+            <FilterSidebar
+              selectedCredits={selectedCredits}
+              setSelectedCredits={setSelectedCredits}
+              selectedDepartment={selectedDepartment}
+              setSelectedDepartment={setSelectedDepartment}
+            />
+          </div>
+
+          {/* 主要课程内容 */}
+          <main className="lg:w-3/4">
+            <SearchBar
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+            />
+            
+            {/* 可以在这里添加一些快速筛选标签 */}
+            <div className="flex flex-wrap gap-2 mb-4 mt-4">
+              <button
+                onClick={() => setSelectedCredits('all')}
+                className={`px-3 py-1 rounded-full text-sm ${selectedCredits === 'all' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-700'}`}
+              >
+                全部学分
+              </button>
+              {[1, 2, 3, 4].map(credit => (
+                <button
+                  key={credit}
+                  onClick={() => setSelectedCredits(credit.toString())}
+                  className={`px-3 py-1 rounded-full text-sm ${selectedCredits === credit.toString() ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-700'}`}
+                >
+                  {credit}学分
+                </button>
+              ))}
+            </div>
+            
+            <div className="mt-4">
+              <CourseTable 
+                courses={sortedCourses}
+                onSort={() => handleSort('rating')}
+                sortDirection={sortConfig?.field === 'rating' ? sortConfig.direction : null}
+              />
+            </div>
+            
+            {/* 课程统计信息 */}
+            <div className="mt-8 p-4 bg-white rounded-lg shadow-sm border">
+              <h3 className="text-lg font-medium mb-3">课程统计</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center p-3 bg-blue-50 rounded">
+                  <div className="text-2xl font-bold text-blue-600">{sortedCourses.length}</div>
+                  <div className="text-sm text-gray-600">筛选结果</div>
+                </div>
+                <div className="text-center p-3 bg-green-50 rounded">
+                  <div className="text-2xl font-bold text-green-600">
+                    {Math.max(...sortedCourses.map(c => c.rating))}
+                  </div>
+                  <div className="text-sm text-gray-600">最高评分</div>
+                </div>
+                <div className="text-center p-3 bg-purple-50 rounded">
+                  <div className="text-2xl font-bold text-purple-600">
+                    {new Set(sortedCourses.map(c => c.department)).size}
+                  </div>
+                  <div className="text-sm text-gray-600">涉及院系</div>
+                </div>
+                <div className="text-center p-3 bg-yellow-50 rounded">
+                  <div className="text-2xl font-bold text-yellow-600">
+                    {Math.max(...sortedCourses.map(c => c.credits))}
+                  </div>
+                  <div className="text-sm text-gray-600">最高学分</div>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
     </div>
   );
 }
