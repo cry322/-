@@ -7,16 +7,19 @@ import { TeacherCard } from "./TeacherCard";
 import { Link } from 'react-router-dom';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 
+// 组件属性定义
 interface CourseEvaluationPageProps {
   courseId: number; 
 }
 
+// 课程评价页面组件
 export function CourseEvaluationPage({ courseId }: CourseEvaluationPageProps) {
-  const [teachers, setTeachers] = useState<TeacherDTO[] | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedTeacher, setSelectedTeacher] = useState<string>("全部");
+  const [teachers, setTeachers] = useState<TeacherDTO[] | null>(null); // 教师列表
+  const [loading, setLoading] = useState(false); // 加载状态
+  const [error, setError] = useState<string | null>(null); // 错误信息
+  const [selectedTeacher, setSelectedTeacher] = useState<string>("全部"); // 选中的教师标题
 
+  // 获取教师列表
   useEffect(() => {
     const ac = new AbortController();
     setLoading(true);
@@ -42,6 +45,7 @@ export function CourseEvaluationPage({ courseId }: CourseEvaluationPageProps) {
     return () => ac.abort();
   }, [courseId]);
 
+  // 提取唯一教师标题列表用于筛选
   const teacherTitles = teachers
     ? Array.from(new Set(teachers.map(t => t.title).filter(Boolean)))
     : [];
@@ -49,7 +53,7 @@ export function CourseEvaluationPage({ courseId }: CourseEvaluationPageProps) {
   const filteredTeachers = selectedTeacher === "全部"
     ? teachers
     : teachers?.filter(t => t.title === selectedTeacher) || [];
-
+// 渲染组件
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
       {/* Header */}
@@ -60,10 +64,10 @@ export function CourseEvaluationPage({ courseId }: CourseEvaluationPageProps) {
             <Breadcrumbs
               items={[
                 { label: '课程库', path: '/courses' },
-                { label: '民主的历史与现实' }
+                { label: '心理学导论' }
               ]}
             />
-</div>
+          </div>
         </div>
       </div>
 
