@@ -48,7 +48,7 @@ export function TeacherCard({
         <div className="bg-white rounded-lg p-4 h-full flex flex-col">
           {/* Header */}
           <div className="text-center mb-3 pb-2 border-b-2 border-orange-400">
-            <h3 className="text-gray-800">开课教师</h3>
+            <h3 className="text-gray-800">毛利华</h3>
           </div>
 
           {/* Rating - Single */}
@@ -112,7 +112,7 @@ export function TeacherCard({
         {/* Description - Expanded */}
         <div className="flex-1 bg-gray-50 rounded p-3 mb-3 min-h-[120px]">
           <p className="text-xs text-gray-700 leading-relaxed">
-            {subtitle || "这门课是国际关系学院的专业课，也是二类通识核心课。课程内容就是民主的历史与现实。包括早期民主、代议制民主的兴起与扩散、民主与法治、民主与经济发展、民主与社会结构等内容。考核方式：20小组pre+30个人读书报告+50期末闭卷考试..."}
+            {subtitle || "老师的课堂组织还有slides蛮好，有几节课我感兴趣，其余的有时候会陷入哲学。课堂人满为患。 【考试】：前面有十道选择题比较刁钻，很难做对。然后是六道名词解释，在135个名词中选6个，这个阶段在备考的时候还是很重要的，dz也在这个阶段学到了许多。然后是简答题，最后一个小问会赦免你的一道选择题（自己选题号），或者问你期望的分数之类的hh。..."}
           </p>
         </div>
 
@@ -124,7 +124,7 @@ export function TeacherCard({
           </div>
           <div className="flex justify-between items-center px-2 py-1 bg-purple-50 rounded">
             <span className="text-gray-600">得分区间</span>
-            <span className="text-purple-700">90+</span>
+            <span className="text-purple-700">90-95</span>
           </div>
         </div>
 
