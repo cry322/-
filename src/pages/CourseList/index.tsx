@@ -1,10 +1,10 @@
 ﻿import { FilterSidebar } from './components/FilterSidebar';
 import { SearchBar } from './components/SearchBar';
 import { CourseTable } from './components/CourseTable';
-import { useState,useMemo} from 'react';
+import { useState, useMemo } from 'react';
 import courseHeaderBg from '../../assets/course-back.jpg'; // 请根据实际路径调整
 import { Home, ChevronRight } from "lucide-react";
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 interface Course {
   id: number;
@@ -15,7 +15,6 @@ interface Course {
   department: string;
   rating: number;
 }
-
 
 // 模拟课程数据
 const mockCourses = [
@@ -73,16 +72,22 @@ const mockCourses = [
   { id: 59, courseNo: '1034030', courseName: '魅力化学', credits: 2, teacher: '黄建彬', department: '化学与分子工程学院', rating: 3 },
 ];
 
-// CourseList.tsx
 export default function CourseList() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  
+  // 使用函数初始化，只在组件挂载时计算一次
+  const [searchQuery, setSearchQuery] = useState(() => {
+    return searchParams.get("search") || "";
+  });
+  
   const [selectedCredits, setSelectedCredits] = useState('all');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
   const [courses] = useState(mockCourses);
   const [sortConfig, setSortConfig] = useState<{
-    field: keyof Course;  // 限制为 Course 的键
+    field: keyof Course;
     direction: 'asc' | 'desc';
   } | null>(null);
+  
 
   // 筛选逻辑
   const filteredCourses = courses.filter(course => {
@@ -126,20 +131,18 @@ export default function CourseList() {
   // 处理排序点击
   const handleSort = (field: keyof Course) => {
     setSortConfig(prevConfig => {
-      // 如果点击的是新字段，默认降序
       if (!prevConfig || prevConfig.field !== field) {
         return { field, direction: 'desc' };
       }
       
-      // 如果已经按这个字段排序，切换方向
       if (prevConfig.direction === 'desc') {
         return { field, direction: 'asc' };
       }
       
-      // 如果已经是升序，取消排序
       return null;
     });
   };
+  
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -171,29 +174,8 @@ export default function CourseList() {
         <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
           <h1 className="text-3xl md:text-4xl font-bold mb-3">课程库</h1>
           <p className="text-xl text-gray-200">探索北大丰富课程，找到适合你的学习方向</p>
-         
-          {/* 可以添加一些统计信息
-          <div className="mt-8 flex flex-wrap justify-center gap-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold">{courses.length}</div>
-              <div className="text-gray-300">总课程数</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold">
-                {(courses.reduce((sum, course) => sum + course.rating, 0) / courses.length).toFixed(1)}
-              </div>
-              <div className="text-gray-300">平均评分</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold">
-                {new Set(courses.map(c => c.department)).size}
-              </div>
-              <div className="text-gray-300">开课院系</div>
-            </div>
-          </div> */}
         </div>
         
-        {/* 添加一个渐变覆盖增强可读性 */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/20"></div>
       </div>
 
