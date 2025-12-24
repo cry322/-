@@ -1,6 +1,6 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 // src/pages/CourseDetail/components/CourseEvaluationPage.tsx
 import React, { useEffect, useState } from "react";
-import { Star, ChevronRight, ThumbsUp, Users } from "lucide-react";
 import { courseApi, TeacherDTO } from "../../../services/courseApi";
 import { CourseInfoCard } from "./CourseInfoCard";
 import { TeacherCard } from "./TeacherCard";

@@ -5,6 +5,15 @@ import {
 import { Link } from "react-router-dom";
 
 export function Sidebar() {
+  // 从Excel表中挑选的热门课程数据
+  const hotCourses = [
+    { id: "1630079", name: "心理学导论", count: 128, rating: 4 },
+    { id: "2838360", name: "微观经济学", count: 112, rating: 5 },
+    { id: "3230020", name: "政治学原理", count: 98, rating: 5 },
+    { id: "1339180", name: "世界文化地理", count: 85, rating: 4 },
+    { id: "430171", name: "人类生存发展与核科学", count: 76, rating: 4 }
+  ];
+
   return (
     <aside className="hidden xl:block w-80 flex-shrink-0">
       <div className="sticky top-24 space-y-6">
@@ -15,23 +24,22 @@ export function Sidebar() {
             <h3 className="text-gray-900">最近热门课程</h3>
           </div>
           <div className="space-y-3">
-            {[
-              { name: "数据结构与算法", count: 45 },
-              { name: "微观经济学", count: 38 },
-              { name: "操作系统原理", count: 32 },
-              { name: "大学英语(3)", count: 28 },
-              { name: "高等数学 A(1)", count: 25 },
-            ].map((item, index) => (
+            {hotCourses.map((item, index) => (
               <Link
-                key={index}
-                to="/courses"
-                className="flex items-center justify-between p-2 hover:bg-gray-50 rounded cursor-pointer transition-colors"
+                key={item.id}
+                to={`/courses/${item.id}`}  // 使用动态课程ID
+                className="flex items-center justify-between p-2 hover:bg-gray-50 rounded cursor-pointer transition-colors group"
               >
                 <div className="flex items-center gap-2">
                   <span className="w-5 h-5 bg-blue-100 text-blue-600 rounded flex items-center justify-center text-xs">
                     {index + 1}
                   </span>
-                  <span className="text-gray-700 text-sm">{item.name}</span>
+                  <div className="flex flex-col">
+                    <span className="text-gray-700 text-sm font-medium group-hover:text-blue-600 transition-colors">
+                      {item.name}
+                    </span>
+                    
+                  </div>
                 </div>
                 <span className="text-gray-400 text-xs">{item.count}次浏览</span>
               </Link>
@@ -39,7 +47,7 @@ export function Sidebar() {
           </div>
         </div>
 
-        {/* 帮助链接 */}
+        {/* 帮助链接 - 保持不变 */}
         <div className="bg-white rounded-lg border border-gray-200 p-5 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <HelpCircle className="w-5 h-5 text-gray-600" />
