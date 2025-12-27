@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Star } from 'lucide-react';
 
-interface Course {
+interface Course { // 课程数据类型
   id: number;
   department: string;
   courseNo: string;
@@ -20,11 +20,13 @@ interface CourseTableProps {
 }
 
 export function CourseTable({ courses, onSort, sortDirection }: CourseTableProps) {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // 用于导航到课程详情页
   
   const handleRowClick = (courseId: number) => {
     navigate(`/courses/${courseId}`);
-  };
+  }; // 处理行点击事件，导航到课程详情页
+
+  // 渲染评分星星
   
   const renderStars = (rating: number) => {
     return (

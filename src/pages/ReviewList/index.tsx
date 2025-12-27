@@ -4,10 +4,12 @@ import { Link } from 'react-router-dom';
 import { Home, ChevronRight, Search, ArrowUpDown, ArrowUp, ArrowDown, BookOpen, ChevronLeft, ChevronRight as ChevronRightIcon } from "lucide-react";
 import { ReviewCard } from "./components/ReviewCard";
 import reviewHeaderBg from '../../assets/review_back.jpg';
+import { reviewsData } from './reviews_data';
 
 // 定义 Review 接口
 interface Review {
   id: number;
+  courseId: string;
   courseName: string;
   teacher: string;
   semester: string;
@@ -20,122 +22,6 @@ interface Review {
   harvest: number;
   content: string;
 }
-
-// 模拟数据
-const mockReviews: Review[] = [
-  {
-    id: 1,
-    courseName: "数据结构与算法",
-    teacher: "陈斌",
-    semester: "2024秋季",
-    publishDate: "2024-12-05",
-    overallScore: 4.6,
-    taskLoad: 4.3,
-    difficulty: 4.5,
-    grading: 3.8,
-    teaching: 4.8,
-    harvest: 4.5,
-    content: "这门课程内容非常充实，张教授讲课思路清晰，深入浅出。课程作业量适中，能够很好地巩固课堂所学。期末考试难度适中，只要认真听课做作业基本都能取得不错的成绩。强烈推荐对算法感兴趣的同学选修。",
-  },
-  {
-    id: 2,
-    courseName: "心理学导论",
-    teacher: "毛利华",
-    semester: "2025春季",
-    publishDate: "2025-8-15",
-    overallScore: 4.5,
-    taskLoad: 4.2,
-    difficulty: 3.6,
-    grading: 4.5,
-    teaching: 4.3,
-    harvest: 4.8,
-    content:"毛利华老师的授课水平很高，既幽默风趣又深挚真诚，尽管经常拖堂几分钟到十几分钟不等，但也让人十分陶醉。这是dz大一下学期听得最认真也是最投入的好课，但却也是得分断档最低的（）。课程有两次课堂作业（35%），一次被试（5%），白送考勤分数（10%）和期末考试（50%），尽管dz上课听得很认真，并且对于课上讲的东西自认为是基本完全吸收了，但是期末考的核心概念（163个）之中有约60%在课上并没有提到或者讲得很少，所以这也是一门教考分离比较严重的课（推荐阅读书目《心理学与生活》中确实都有这些概念，但是老师讲的章节里这些内容也并非都是重点，所以都列入期末考范围会造成一定的复习压力）。另外平时作业分dz得的很低，完成的态度是比较认真的，感觉也有自己的见解，可能是需要卷一下形式和字数，dz没有注意，算是交了学费。"
-  },
-    {
-    id: 3,
-    courseName: "计算机网络",
-    teacher: "王教授",
-    semester: "2024春季",
-    publishDate: "2024-11-28",
-    overallScore: 3.8,
-    taskLoad: 3.5,
-    difficulty: 3.8,
-    grading: 4.3,
-    teaching: 3.5,
-    harvest: 3.8,
-    content: "课程内容比较传统，主要讲解网络协议和原理。王教授讲课偏向理论，实践环节较少。作业主要是习题，期末考试题型固定。给分比较宽松，容易及格但拿高分需要深入理解。",
-  },
-  {
-    id: 4,
-    courseName: "软件工程",
-    teacher: "赵老师",
-    semester: "2024春季",
-    publishDate: "2024-11-25",
-    overallScore: 4.3,
-    taskLoad: 4.0,
-    difficulty: 3.5,
-    grading: 4.3,
-    teaching: 4.3,
-    harvest: 4.0,
-    content: "非常实用的一门课，赵老师会结合实际项目案例讲解软件工程的各个环节。课程项目是团队合作形式，能锻炼协作能力。考核方式多元化，包括项目、报告和考试。",
-  },
-  {
-    id: 5,
-    courseName: "操作系统",
-    teacher: "陈教授",
-    semester: "2023秋季",
-    publishDate: "2024-11-20",
-    overallScore: 4.5,
-    taskLoad: 4.8,
-    difficulty: 4.8,
-    grading: 3.5,
-    teaching: 4.5,
-    harvest: 4.8,
-    content: "课程难度很大，作业量也很多，但收获满满。陈教授对操作系统的理解非常深刻，课堂讨论很有深度。实验项目非常有挑战性，建议有充足时间和精力再选。给分偏严格，但学到的东西绝对值得。",
-  },
-  {
-    id: 6,
-    courseName: "数据库系统",
-    teacher: "刘副教授",
-    semester: "2023秋季",
-    publishDate: "2024-11-15",
-    overallScore: 4.2,
-    taskLoad: 3.8,
-    difficulty: 3.5,
-    grading: 4.5,
-    teaching: 4.0,
-    harvest: 4.3,
-    content: "刘老师讲课很有条理，课程内容覆盖数据库的各个方面。实验项目设计合理，从SQL到NoSQL都有涉及。给分非常宽松，平时认真完成作业基本都能拿到不错的分数。",
-  },
-  {
-    id: 7,
-    courseName: "人工智能导论",
-    teacher: "周教授",
-    semester: "2024春季",
-    publishDate: "2024-11-10",
-    overallScore: 4.4,
-    taskLoad: 4.0,
-    difficulty: 4.0,
-    grading: 4.3,
-    teaching: 4.5,
-    harvest: 4.5,
-    content: "周教授是AI领域的专家，课程内容紧跟前沿技术。会介绍最新的研究成果和应用案例。课程项目可以选择自己感兴趣的方向，自由度很高。考核方式灵活，鼓励创新。",
-  },
-  {
-    id: 8,
-    courseName: "编译原理",
-    teacher: "吴教授",
-    semester: "2023春季",
-    publishDate: "2024-11-05",
-    overallScore: 3.9,
-    taskLoad: 4.5,
-    difficulty: 4.5,
-    grading: 3.8,
-    teaching: 3.8,
-    harvest: 4.3,
-    content: "编译原理本身就是比较难的课程，吴教授讲解还算清楚。课程作业量大且难度高，需要投入大量时间。期末考试理论题较多，需要记忆的内容不少。给分中规中矩。",
-  },
-];
 
 type SortOption = "overall" | "taskLoad" | "difficulty" | "grading" | "teaching" | "harvest" | "publishDate";
 type SortDirection = "asc" | "desc";
@@ -194,6 +80,7 @@ const ReviewList: React.FC = () => {
     setSortDirection(sortDirection === "desc" ? "asc" : "desc");
     setCurrentPage(1); // 排序方向变化时重置到第一页
   };
+  
   // 根据排序字段获取对应的分数
   const getSortScore = (review: Review): number => {
     switch (sortBy) {
@@ -225,7 +112,7 @@ const ReviewList: React.FC = () => {
 
   // 筛选和排序逻辑 - 内联 getSortScore 函数
   const filteredAndSortedReviews: Review[] = useMemo(() => {
-    let result = [...mockReviews];
+    let result = [...reviewsData]; // 使用真实数据
 
     // 搜索过滤
     if (searchTerm) {

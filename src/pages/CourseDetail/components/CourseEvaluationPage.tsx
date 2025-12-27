@@ -1,59 +1,119 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 // src/pages/CourseDetail/components/CourseEvaluationPage.tsx
-import React, { useEffect, useState } from "react";
-import { Star, ChevronRight, ThumbsUp, Users } from "lucide-react";
-import { courseApi, TeacherDTO } from "../../../services/courseApi";
+import  { useEffect, useState } from "react";
 import { CourseInfoCard } from "./CourseInfoCard";
 import { TeacherCard } from "./TeacherCard";
-import { Link } from 'react-router-dom';
+import { Link} from 'react-router-dom'; // 添加 useNavigate
 import Breadcrumbs from '../../../components/Breadcrumbs';
+import courseData from "../course_data.json";
 
 // 组件属性定义
 interface CourseEvaluationPageProps {
   courseId: number; 
 }
 
+// 本地课程数据中卡片的结构（与 TeacherCardProps 对齐）
+// 这里一张卡片对应一条测评，而不是一个教师聚合
+interface LocalTeacher {
+  id: string;
+  name: string;
+  alias?: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  weeks?: string; // 本地 JSON 中是字符串，比如 "1-16周"
+  about?: string;
+  capacity?: number;
+  reviewDetail?: any; // 结构与 TeacherCard 内部的 TeacherReviewDetail 一致，这里用 any 简化
+}
+
 // 课程评价页面组件
 export function CourseEvaluationPage({ courseId }: CourseEvaluationPageProps) {
-  const [teachers, setTeachers] = useState<TeacherDTO[] | null>(null); // 教师列表
+  const [teachers, setTeachers] = useState<LocalTeacher[] | null>(null); // 教师列表（本地模拟数据）
   const [loading, setLoading] = useState(false); // 加载状态
   const [error, setError] = useState<string | null>(null); // 错误信息
-  const [selectedTeacher, setSelectedTeacher] = useState<string>("全部"); // 选中的教师标题
+  const [selectedTeacher, setSelectedTeacher] = useState<string>("全部"); // 选中的教师姓名
+  const [courseName, setCourseName] = useState<string>(""); // 当前课程名称
+  
 
-  // 获取教师列表
+  // 从本地 JSON 获取该课程的所有测评，并转换为卡片数据
   useEffect(() => {
     const ac = new AbortController();
     setLoading(true);
     setError(null);
 
-    courseApi.getCourseTeachers(courseId)
-      .then((data) => {
-        if (!ac.signal.aborted) {
-          setTeachers(data);
-        }
-      })
-      .catch((err) => {
-        if (!ac.signal.aborted) {
-          setError(err?.message ?? "加载教师信息失败");
-        }
-      })
-      .finally(() => {
-        if (!ac.signal.aborted) {
-          setLoading(false);
-        }
-      });
+    // 在本地模拟数据中查找对应课程
+    const matchedCourse = (courseData as any[]).find((item) => {
+      const c = item.course || {};
+      return c.courseId === String(courseId) || c.id === courseId;
+    });
+
+    if (!ac.signal.aborted) {
+      if (matchedCourse) {
+        setCourseName(matchedCourse.course?.name ?? "");
+
+        const reviews = (matchedCourse.reviews || []) as any[];
+
+        // 将每条测评转换为一张卡片
+        const localTeachers: LocalTeacher[] = reviews.map((r: any) => {
+          const teacherName = r.teacher || "";
+          const fullContent = r.fullContent || r.content || "";
+
+          return {
+            id: String(r.id),
+            name: teacherName,
+            alias: undefined,
+            title: teacherName,
+            subtitle: r.semester ? `${r.semester} · 综合评分 ${r.overallScore?.toFixed ? r.overallScore.toFixed(1) : r.overallScore ?? ''}` : undefined,
+            description: fullContent,
+            weeks: matchedCourse.course?.semester || "",
+            about: "",
+            capacity: 0,
+            reviewDetail: {
+              count: 1,
+              avgScore: r.overallScore || 0,
+              reviews: [
+                {
+                  id: r.id,
+                  content: r.content || fullContent,
+                  scores: {
+                    overall: r.overallScore || 0,
+                    taskLoad: r.taskLoad || 0,
+                    difficulty: r.difficulty || 0,
+                    grading: r.grading || 0,
+                    teaching: r.teaching || 0,
+                    harvest: r.harvest || 0,
+                  },
+                  semester: r.semester || "",
+                  scoreRange: r.scoreRange || "",
+                },
+              ],
+            },
+          };
+        });
+
+        setTeachers(localTeachers);
+      } else {
+        setCourseName("");
+        setTeachers([]);
+        setError("未在本地模拟数据中找到该课程");
+      }
+      setLoading(false);
+    }
 
     return () => ac.abort();
   }, [courseId]);
 
   // 提取唯一教师标题列表用于筛选
   const teacherTitles = teachers
-    ? Array.from(new Set(teachers.map(t => t.title).filter(Boolean)))
+    ? Array.from(new Set(teachers.map(t => t.name || t.title).filter(Boolean)))
     : [];
 
   const filteredTeachers = selectedTeacher === "全部"
     ? teachers
-    : teachers?.filter(t => t.title === selectedTeacher) || [];
-// 渲染组件
+    : teachers?.filter(t => (t.name || t.title) === selectedTeacher) || [];
+
+  // 渲染组件
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
       {/* Header */}
@@ -64,7 +124,7 @@ export function CourseEvaluationPage({ courseId }: CourseEvaluationPageProps) {
             <Breadcrumbs
               items={[
                 { label: '课程库', path: '/courses' },
-                { label: '心理学导论' }
+                { label: courseName || '课程详情' }
               ]}
             />
           </div>
@@ -76,7 +136,7 @@ export function CourseEvaluationPage({ courseId }: CourseEvaluationPageProps) {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Left Column - Course Info */}
           <div className="lg:w-80 flex-shrink-0">
-            <CourseInfoCard />
+            <CourseInfoCard courseId={courseId} />
           </div>
 
           {/* Right Column - Teacher Sections */}
@@ -118,13 +178,22 @@ export function CourseEvaluationPage({ courseId }: CourseEvaluationPageProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                 {loading ? (
                   [...Array(6)].map((_, i) => (
-                    <TeacherCard key={`skeleton-${i}`} isPlaceholder colorIndex={i} />
+                    <TeacherCard
+                      key={`skeleton-${i}`}
+                      id={`skeleton-${i}`}
+                      name="占位教师"
+                      title="占位教师职称"
+                      isPlaceholder
+                      colorIndex={i}
+                    />
                   ))
                 ) : filteredTeachers && filteredTeachers.length > 0 ? (
                   filteredTeachers.map((t, i) => (
                     <TeacherCard
                       key={t.id}
-                      id={t.id.toString()}
+                      id={t.id}
+                      name={t.name || t.title}
+                      alias={t.alias}
                       title={t.title}
                       subtitle={t.subtitle}
                       description={t.description}
@@ -132,7 +201,8 @@ export function CourseEvaluationPage({ courseId }: CourseEvaluationPageProps) {
                       about={t.about}
                       reviewDetail={t.reviewDetail}
                       capacity={t.capacity}
-                      likes={t.likes}
+                      courseId={String(courseId)}
+                      courseName={courseName}
                       colorIndex={i}
                     />
                   ))
@@ -145,7 +215,7 @@ export function CourseEvaluationPage({ courseId }: CourseEvaluationPageProps) {
             )}
           </div>
         </div>
-</div>  
+      </div>  
     </div>
   );
 }
