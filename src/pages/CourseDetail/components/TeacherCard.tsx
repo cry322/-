@@ -1,5 +1,6 @@
 // src/pages/CourseDetail/components/TeacherCard.tsx
 import { Star } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // 根据你的本地数据结构定义接口
 interface TeacherReviewDetail {
@@ -121,22 +122,29 @@ const getScoreRange = (teacher: TeacherCardProps): string => {
   return "未知";
 };
 
+// 获取用于跳转的测评 ID（这里取第一条测评）
+const getFirstReviewId = (teacher: TeacherCardProps): number | null => {
+  const reviews = teacher.reviewDetail?.reviews;
+  if (reviews && reviews.length > 0) {
+    const first = reviews[0];
+    return typeof first.id === "number" ? first.id : null;
+  }
+  return null;
+};
+
 export function TeacherCard({
   id,
   name,
   alias,
   title,
-  subtitle,
   description,
-  about,
-  capacity = 0,
   reviewDetail,
   courseId,
-  courseName,
   isPlaceholder = false,
   colorIndex = 0,
   onClick
 }: TeacherCardProps) {
+  const navigate = useNavigate();
   const bgColor = cardColors[colorIndex % cardColors.length];
   const avgScore = reviewDetail?.avgScore || 0;
   const reviewCount = reviewDetail?.count || 0;
@@ -146,10 +154,15 @@ export function TeacherCard({
   const handleClick = () => {
     if (onClick) {
       onClick();
-    } else if (id) {
-      // 默认跳转到教师详情页
-      // 可以根据你的路由配置调整
-      window.location.href = `/teachers/${id}`;
+    } else {
+      // 默认跳转到对应的测评详情页
+      const reviewId = getFirstReviewId({ id, name, title, reviewDetail } as TeacherCardProps);
+      if (reviewId !== null) {
+        navigate(`/reviews/${reviewId}`);
+      } else if (courseId) {
+        // 如果没有具体测评 ID，就退而求其次跳到课程详情
+        navigate(`/courses/${courseId}`);
+      }
     }
   };
 

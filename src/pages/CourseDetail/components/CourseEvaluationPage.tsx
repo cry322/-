@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 // src/pages/CourseDetail/components/CourseEvaluationPage.tsx
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { CourseInfoCard } from "./CourseInfoCard";
 import { TeacherCard } from "./TeacherCard";
-import { Link, useNavigate } from 'react-router-dom'; // 添加 useNavigate
+import { Link} from 'react-router-dom'; // 添加 useNavigate
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import courseData from "../course_data.json";
 
@@ -12,7 +12,8 @@ interface CourseEvaluationPageProps {
   courseId: number; 
 }
 
-// 本地课程数据中教师的结构（与 TeacherCardProps 对齐）
+// 本地课程数据中卡片的结构（与 TeacherCardProps 对齐）
+// 这里一张卡片对应一条测评，而不是一个教师聚合
 interface LocalTeacher {
   id: string;
   name: string;
@@ -34,9 +35,8 @@ export function CourseEvaluationPage({ courseId }: CourseEvaluationPageProps) {
   const [selectedTeacher, setSelectedTeacher] = useState<string>("全部"); // 选中的教师姓名
   const [courseName, setCourseName] = useState<string>(""); // 当前课程名称
   
-  const navigate = useNavigate(); // 添加导航钩子
 
-  // 从本地 JSON 获取教师列表
+  // 从本地 JSON 获取该课程的所有测评，并转换为卡片数据
   useEffect(() => {
     const ac = new AbortController();
     setLoading(true);
@@ -51,18 +51,47 @@ export function CourseEvaluationPage({ courseId }: CourseEvaluationPageProps) {
     if (!ac.signal.aborted) {
       if (matchedCourse) {
         setCourseName(matchedCourse.course?.name ?? "");
-        const localTeachers: LocalTeacher[] = (matchedCourse.teachers || []).map((t: any) => ({
-          id: String(t.id),
-          name: t.name || t.title || "",
-          alias: t.alias,
-          title: t.title || t.name || "",
-          subtitle: t.subtitle,
-          description: t.description,
-          weeks: t.weeks, // 本地是字符串
-          about: t.about,
-          capacity: typeof t.capacity === "number" ? t.capacity : Number(t.capacity) || 0,
-          reviewDetail: t.reviewDetail,
-        }));
+
+        const reviews = (matchedCourse.reviews || []) as any[];
+
+        // 将每条测评转换为一张卡片
+        const localTeachers: LocalTeacher[] = reviews.map((r: any) => {
+          const teacherName = r.teacher || "";
+          const fullContent = r.fullContent || r.content || "";
+
+          return {
+            id: String(r.id),
+            name: teacherName,
+            alias: undefined,
+            title: teacherName,
+            subtitle: r.semester ? `${r.semester} · 综合评分 ${r.overallScore?.toFixed ? r.overallScore.toFixed(1) : r.overallScore ?? ''}` : undefined,
+            description: fullContent,
+            weeks: matchedCourse.course?.semester || "",
+            about: "",
+            capacity: 0,
+            reviewDetail: {
+              count: 1,
+              avgScore: r.overallScore || 0,
+              reviews: [
+                {
+                  id: r.id,
+                  content: r.content || fullContent,
+                  scores: {
+                    overall: r.overallScore || 0,
+                    taskLoad: r.taskLoad || 0,
+                    difficulty: r.difficulty || 0,
+                    grading: r.grading || 0,
+                    teaching: r.teaching || 0,
+                    harvest: r.harvest || 0,
+                  },
+                  semester: r.semester || "",
+                  scoreRange: r.scoreRange || "",
+                },
+              ],
+            },
+          };
+        });
+
         setTeachers(localTeachers);
       } else {
         setCourseName("");
@@ -74,16 +103,6 @@ export function CourseEvaluationPage({ courseId }: CourseEvaluationPageProps) {
 
     return () => ac.abort();
   }, [courseId]);
-
-  // 处理教师卡片点击事件
-  const handleTeacherClick = (teacherId: string) => {
-    // 跳转到教师详情页面，这里假设路由是 /teacher/:teacherId
-    // 或者跳转到课程详情下的教师页面：/courses/:courseId/teachers/:teacherId
-    navigate(`/courses/${courseId}/teachers/${teacherId}`);
-    
-    // 如果你希望跳转到专门的教师详情页（不依赖于课程）：
-    // navigate(`/teachers/${teacherId}`);
-  };
 
   // 提取唯一教师标题列表用于筛选
   const teacherTitles = teachers
@@ -185,7 +204,6 @@ export function CourseEvaluationPage({ courseId }: CourseEvaluationPageProps) {
                       courseId={String(courseId)}
                       courseName={courseName}
                       colorIndex={i}
-                      onClick={() => handleTeacherClick(t.id)}
                     />
                   ))
                 ) : (
