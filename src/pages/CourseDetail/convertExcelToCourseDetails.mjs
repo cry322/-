@@ -63,7 +63,7 @@ try {
         about: '',
         weeks: '1-16周', // 默认周数，实际数据中可能需要调整
         capacity: 0, // 容量信息
-        likes: Math.floor(Math.random() * 100) + 1, // 随机点赞数
+        // 不再在这里随机生成 likes，如有需要可由真实数据提供
         reviewDetail: {
           count: Math.floor(Math.random() * 50) + 1, // 随机评价数量
           avgScore: 0 // 平均分，稍后计算
@@ -97,9 +97,10 @@ try {
         teaching: 16,   // Q列：听课体验评分
         harvest: 18,    // S列：收获程度评分
         content: 12,    // M列：文本测评
-        courseId: 21,   // V列：课程号
-        department: 23, // X列：开课院系
-        publishDate: 29 // AI列：测评创建时间
+        courseId: 21,   // V列：课程号4       
+        department: 24, // Y列：开课院系
+        publishDate: 29, // AI列：测评创建时间
+        scorerange: 20  // U列：测评人得分区间
       };
 
       // 解析分数
@@ -117,7 +118,12 @@ try {
       const courseSubCategory = row[colIndexes.courseSubCategory] || '';
       const courseType = row[colIndexes.courseType] || '';
       const credits = row[colIndexes.credits] || '';
-      const department = row[colIndexes.department] || '';
+      const departmentCell = row[colIndexes.department];
+      // 将院系信息统一为字符串；如果 Excel 中该列是数字编码，可在这里增加映射表
+      const department =
+        departmentCell === undefined || departmentCell === null
+          ? ''
+          : String(departmentCell).trim();
       const assessment = row[colIndexes.assessment] || '';
       
       // 获取分数
@@ -127,6 +133,11 @@ try {
       const grading = parseScore(row[colIndexes.grading]);
       const teachingScore = parseScore(row[colIndexes.teaching]);
       const harvest = parseScore(row[colIndexes.harvest]);
+      const scoreRangeCell = row[colIndexes.scorerange];
+      const scoreRange =
+        scoreRangeCell === undefined || scoreRangeCell === null
+          ? ''
+          : String(scoreRangeCell).trim();
       
       // 计算平均分
       const avgScore = overallScore > 0 ? overallScore : 
@@ -166,7 +177,8 @@ try {
             teaching: teachingScore,
             harvest
           },
-          semester
+          semester,
+          scoreRange
         }];
       });
 
@@ -197,7 +209,8 @@ try {
           teaching: teachingScore,
           harvest,
           content: content.length > 200 ? content.substring(0, 200) + '...' : content,
-          fullContent: content
+          fullContent: content,
+          scoreRange
         }]
       };
     } catch (error) {
@@ -271,6 +284,7 @@ export interface TeacherReviewDetail {
       harvest: number;
     };
     semester: string;
+    scoreRange: string;
   }[];
 }
 
@@ -284,7 +298,7 @@ export interface TeacherDTO {
   about: string;
   weeks: string;
   capacity: number;
-  likes: number;
+  likes?: number;
   reviewDetail: TeacherReviewDetail;
 }
 
@@ -318,6 +332,7 @@ export interface CourseData {
     harvest: number;
     content: string;
     fullContent: string;
+    scoreRange: string;
   }[];
 }
 
