@@ -1,14 +1,5 @@
 import { useState } from 'react';
-import { 
-  Reply, 
-  Trash2, 
-  Flag, 
-  MoreVertical, 
-  ExternalLink,
-  ThumbsUp,
-  Send,
-  X
-} from 'lucide-react';
+import { Reply, Trash2, Flag, MoreVertical, ThumbsUp, Send, X } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Message } from '../types/message';
 import { useNavigate } from 'react-router-dom';
@@ -46,17 +37,12 @@ export function MessageDetail({ message, onDelete, onReply, onMarkAsRead }: Mess
             </svg>
           </div>
 
-          <div className="text-gray-600 font-medium">
-            暂未选择消息
-          </div>
-          <div className="text-gray-400 text-sm mt-1">
-            点击左侧列表查看消息详情
-          </div>
+          <div className="text-gray-600 font-medium">暂未选择消息</div>
+          <div className="text-gray-400 text-sm mt-1">点击左侧列表查看消息详情</div>
         </div>
       </div>
     );
   }
-
 
   const handleSendReply = () => {
     if (replyContent.trim()) {
@@ -79,7 +65,7 @@ export function MessageDetail({ message, onDelete, onReply, onMarkAsRead }: Mess
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-start gap-4">
             {message.sender.avatar ? (
-              <ImageWithFallback 
+              <ImageWithFallback
                 src={message.sender.avatar}
                 alt={message.sender.name}
                 className="w-12 h-12 rounded-full object-cover"
@@ -132,7 +118,7 @@ export function MessageDetail({ message, onDelete, onReply, onMarkAsRead }: Mess
               </button>
               {showMenu && (
                 <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
-                  <button 
+                  <button
                     className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2"
                     style={{ fontSize: '14px' }}
                   >
@@ -160,14 +146,14 @@ export function MessageDetail({ message, onDelete, onReply, onMarkAsRead }: Mess
         )}
 
         {/* 消息正文 */}
-        <div 
+        <div
           className="text-gray-700 leading-relaxed mb-6"
           style={{ fontSize: '15px', lineHeight: '1.6' }}
         >
           {message.content}
         </div>
 
-        {/* 相关课程卡片 */}
+        {/* 相关课程卡片（有课程就展示课程信息；按钮可有可无） */}
         {message.course && (
           <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
             <div className="flex items-center justify-between">
@@ -175,13 +161,13 @@ export function MessageDetail({ message, onDelete, onReply, onMarkAsRead }: Mess
                 <div className="text-gray-500 mb-1" style={{ fontSize: '12px' }}>
                   相关课程
                 </div>
-                <div className="text-gray-900 mb-1">
-                  {message.course.name}
-                </div>
+                <div className="text-gray-900 mb-1">{message.course.name}</div>
                 <div className="text-gray-500" style={{ fontSize: '13px' }}>
                   课程代码：{message.course.code}
                 </div>
               </div>
+
+              {/* ✅ 有 relatedUrl 才显示按钮 */}
               {message.relatedUrl && (
                 <button
                   onClick={() => navigate(message.relatedUrl!)}
@@ -189,9 +175,20 @@ export function MessageDetail({ message, onDelete, onReply, onMarkAsRead }: Mess
                 >
                   查看详情
                 </button>
-
               )}
             </div>
+          </div>
+        )}
+
+        {/* ✅ 如果没有 course，但有 relatedUrl，也要给一个按钮入口 */}
+        {!message.course && message.relatedUrl && (
+          <div className="mb-6">
+            <button
+              onClick={() => navigate(message.relatedUrl!)}
+              className="px-4 py-2 bg-[#2563eb] text-white rounded-lg hover:bg-[#1d4ed8] transition-colors flex items-center gap-2"
+            >
+              查看详情
+            </button>
           </div>
         )}
 
@@ -201,7 +198,7 @@ export function MessageDetail({ message, onDelete, onReply, onMarkAsRead }: Mess
             <div className="text-gray-700 mb-3">附件</div>
             <div className="grid grid-cols-2 gap-3">
               {message.attachments.map((attachment, index) => (
-                <div 
+                <div
                   key={index}
                   className="p-3 bg-gray-50 rounded-lg border border-gray-200 flex items-center gap-3 hover:bg-gray-100 cursor-pointer transition-colors"
                 >
@@ -235,7 +232,7 @@ export function MessageDetail({ message, onDelete, onReply, onMarkAsRead }: Mess
         <div className="border-t border-gray-200 p-4 bg-gray-50">
           <div className="flex items-start justify-between mb-3">
             <span className="text-gray-700">快速回复</span>
-            <button 
+            <button
               onClick={() => setShowReply(false)}
               className="text-gray-400 hover:text-gray-600"
             >
@@ -244,7 +241,7 @@ export function MessageDetail({ message, onDelete, onReply, onMarkAsRead }: Mess
           </div>
           <textarea
             value={replyContent}
-            onChange={(e) => setReplyContent(e.target.value)}
+            onChange={e => setReplyContent(e.target.value)}
             placeholder="输入回复内容..."
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb] resize-none"
             rows={3}

@@ -29,15 +29,15 @@ const messageTypeColors: Record<MessageType, string> = {
 export function MessageItem({ message, isSelected, onClick }: MessageItemProps) {
   const Icon = messageTypeIcons[message.type];
   const iconColor = messageTypeColors[message.type];
-  
+
   return (
     <div
       onClick={onClick}
       className={`p-4 border-b border-gray-100 cursor-pointer transition-colors ${
-        isSelected 
-          ? 'bg-blue-50 border-l-2 border-l-[#2563eb]' 
-          : message.isRead 
-            ? 'bg-white hover:bg-gray-50' 
+        isSelected
+          ? 'bg-blue-50 border-l-2 border-l-[#2563eb]'
+          : message.isRead
+            ? 'bg-white hover:bg-gray-50'
             : 'bg-blue-50/30 hover:bg-blue-50/50'
       }`}
     >
@@ -45,7 +45,7 @@ export function MessageItem({ message, isSelected, onClick }: MessageItemProps) 
         {/* 头像/图标区域 */}
         <div className="relative flex-shrink-0">
           {message.sender.avatar ? (
-            <ImageWithFallback 
+            <ImageWithFallback
               src={message.sender.avatar}
               alt={message.sender.name}
               className="w-10 h-10 rounded-full object-cover"
@@ -68,25 +68,19 @@ export function MessageItem({ message, isSelected, onClick }: MessageItemProps) 
               {message.time}
             </span>
           </div>
-          
-          <div 
-            className="text-gray-900 mb-1" 
-            style={{ fontSize: '14px' }}
-          >
+
+          <div className="text-gray-900 mb-1" style={{ fontSize: '14px' }}>
             {message.title}
           </div>
-          
-          <div 
-            className="text-gray-500 line-clamp-2"
-            style={{ fontSize: '13px' }}
-          >
+
+          <div className="text-gray-500 line-clamp-2" style={{ fontSize: '13px' }}>
             {message.preview}
           </div>
 
           {/* 课程标签 */}
           {message.course && (
             <div className="mt-2">
-              <span 
+              <span
                 className="inline-block px-2 py-0.5 bg-gray-100 text-gray-700 rounded"
                 style={{ fontSize: '12px' }}
               >
