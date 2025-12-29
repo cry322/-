@@ -28,7 +28,7 @@ export const mockMessages: Message[] = [
       name: '微观经济学',
       code: '2838360',
     },
-    relatedUrl: '/reviews/1',
+    relatedUrl: '/reviews/2838360',
   },
 
   {

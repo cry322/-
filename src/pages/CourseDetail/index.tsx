@@ -1,12 +1,15 @@
-﻿import React from 'react';
+﻿import { CourseEvaluationPage } from './components/CourseEvaluationPage';
+import { useParams } from 'react-router-dom';
 
-const CourseDetailPage = () => {
+export default function CourseDetailPage() {
+  const { id } = useParams();
+
+  if (!id) return <div>课程ID不存在</div>;
+
   return (
-    <div>
-      <h1>CourseDetail页面</h1>
-      <p>这是CourseDetail页面，正在开发中...</p>
+    <div className="p-6">
+      <h1>课程详情：{id}</h1>
+      <CourseEvaluationPage courseId={Number(id)} />
     </div>
   );
-};
-
-export default CourseDetailPage;
+}

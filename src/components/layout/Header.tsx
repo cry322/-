@@ -10,6 +10,7 @@ import {
 import logo from "../../assets/选课宝典logo.png"; // 使用@别名
 import { Link, useLocation } from "react-router-dom";
 
+
 export function Header() {
   const location = useLocation();
   const hasNotification = false; // 假设没有通知

@@ -10,91 +10,102 @@ interface Course {
   reviewCount: number;
   overallScore: number; // 改为综合评分（1-5，支持小数）
   tags: string[];
+  type: string; // 添加类型字段
 }
 
 const courses: Course[] = [
   {
-    id: "1",
-    name: "数据结构与算法",
-    teacher: "张教授",
-    department: "信科学院",
-    reviewCount: 234,
-    overallScore: 4.5,
-    tags: ["作业适中", "讲解清晰", "考试公平"],
-  },
-  {
-    id: "2",
-    name: "高等数学 A",
-    teacher: "李老师",
-    department: "数学科学学院",
-    reviewCount: 456,
-    overallScore: 4.2,
-    tags: ["作业多", "知识点全面", "期末压力大"],
-  },
-  {
-    id: "3",
-    name: "走近物理学",
-    teacher: "王老师",
-    department: "物理学院",
-    reviewCount: 189,
-    overallScore: 4.4,
-    tags: ["实践性强", "考勤严格", "收获大"],
-  },
-  {
-    id: "4",
-    name: "操作系统原理",
-    teacher: "陈教授",
-    department: "信科学院",
-    reviewCount: 167,
-    overallScore: 4.3,
-    tags: ["课程硬核", "项目有趣", "老师负责"],
-  },
-  {
-    id: "5",
+    id: "2838360",
     name: "微观经济学",
-    teacher: "刘老师",
-    department: "经济学院",
-    reviewCount: 203,
-    overallScore: 4.6,
-    tags: ["逻辑清晰", "案例丰富", "考试难度适中"],
+    teacher: "高彧",
+    department: "光华管理学院",
+    reviewCount: 120,
+    overallScore: 5.0,
+    tags: ["课程干货多", "实践性强", "给分好"],
+    type: "general", // 添加类型字段
   },
   {
-    id: "6",
-    name: "英美词汇",
-    teacher: "赵老师",
-    department: "外国语学院",
-    reviewCount: 312,
-    overallScore: 4.7,
-    tags: ["互动多", "提升口语", "给分友好"],
+    id: "3230020",
+    name: "政治学原理",
+    teacher: "马啸",
+    department: "政府管理学院",
+    reviewCount: 85,
+    overallScore: 5.0,
+    tags: ["理论深入", "互动性强", "讲课生动"],
+    type: "general",
   },
   {
-    id: "7",
-    name: "思想道德与法治",
-    teacher: "孙教授",
-    department: "马克思主义学院",
-    reviewCount: 287,
-    overallScore: 4.5,
-    tags: ["课堂活跃", "内容实用", "考核多样"],
+    id: "4334010",
+    name: "古代西亚北非神话与艺术",
+    teacher: "贾妍",
+    department: "艺术学院",
+    reviewCount: 95,
+    overallScore: 5.0,
+    tags: ["讲课生动", "前沿内容", "不考勤"],
+    type: "general",
   },
   {
-    id: "8",
-    name: "篮球",
-    teacher: "周教练",
-    department: "体育教研部",
-    reviewCount: 156,
-    overallScore: 4.8,
-    tags: ["趣味性强", "锻炼身体", "轻松愉快"],
+    id: "2432210",
+    name: "民主的历史与现实",
+    teacher: "汪卫华",
+    department: "国际关系学院",
+    reviewCount: 78,
+    overallScore: 4.0,
+    tags: ["理论深入", "前沿内容", "考勤严格"],
+    type: "general",
   },
   {
-    id: "9",
-    name: "中国近现代史纲要",
-    teacher: "吴教授",
-    department: "马克思主义学院",
-    reviewCount: 198,
-    overallScore: 4.4,
-    tags: ["历史故事", "启发思考", "作业合理"],
+    id: "1630079",
+    name: "心理学导论",
+    teacher: "毛利华",
+    department: "心理与认知科学学院",
+    reviewCount: 210,
+    overallScore: 4.0,
+    tags: ["课程干货多", "讲课生动", "给分好"],
+    type: "general",
+  },
+  {
+    id: "1339180",
+    name: "世界文化地理",
+    teacher: "邓辉",
+    department: "城市与环境学院",
+    reviewCount: 145,
+    overallScore: 4.0,
+    tags: ["实践性强", "讲课生动", "给分好"],
+    type: "general",
+  },
+  {
+    id: "1339320",
+    name: "中国历史地理",
+    teacher: "韩茂莉",
+    department: "城市与环境学院",
+    reviewCount: 112,
+    overallScore: 5.0,
+    tags: ["理论深入", "讲课生动", "考试难"],
+    type: "general",
+  },
+  {
+    id: "2039130",
+    name: "民俗研究",
+    teacher: "王娟",
+    department: "中国语言文学系",
+    reviewCount: 92,
+    overallScore: 5.0,
+    tags: ["理论深入", "课件详细", "无论文"],
+    type: "general",
+  },
+  {
+    id: "2939991",
+    name: "英美侵权法",
+    teacher: "徐爱国",
+    department: "法学院",
+    reviewCount: 98,
+    overallScore: 5.0,
+    tags: ["讲课生动", "给分好", "无考试"],
+    type: "general",
   },
 ];
+
 
 // 课程类型选项
 const courseTypes = [
@@ -109,44 +120,7 @@ const courseTypes = [
   { id: "labor", name: "劳动教育课" },
 ];
 
-// 添加一个函数来根据课程信息判断课程类型
-const getCourseType = (course: Course): string => {
-  const { name, department } = course;
 
-  if (name.includes("数学") || department === "数学学院") {
-    return "public-math";
-  } else if (
-    department === "计算机学院" ||
-    name.includes("数据") ||
-    name.includes("操作") ||
-    name.includes("算法")
-  ) {
-    return "computer";
-  } else if (name.includes("英语") || department === "外国语学院") {
-    return "english";
-  } else if (
-    department === "马克思主义学院" ||
-    name.includes("思想") ||
-    name.includes("法律") ||
-    name.includes("近现代史")
-  ) {
-    return "ideology";
-  } else if (department === "体育部" || name.includes("体育")) {
-    return "sports";
-  } else if (department === "经济学院") {
-    return "general"; // 微观经济学属于通识教育
-  } else if (department === "物理学院") {
-    return "general"; // 大学物理实验属于通识教育
-  }
-
-  return "general"; // 默认归为通识教育
-};
-
-// 给每个课程添加类型信息
-const coursesWithType = courses.map((course) => ({
-  ...course,
-  type: getCourseType(course),
-}));
 
 export function CourseGrid() {
   const [selectedType, setSelectedType] = useState<string>("all");
@@ -154,8 +128,8 @@ export function CourseGrid() {
   // 根据选中的类型过滤课程
   const filteredCourses =
     selectedType === "all"
-      ? coursesWithType
-      : coursesWithType.filter((course) => course.type === selectedType);
+      ? courses
+      : courses.filter((course) => course.type === selectedType);
 
   // 渲染星级评分，支持半星
   const renderStars = (score: number) => {

@@ -6,7 +6,8 @@ import { MessageDetail } from './components/MessageDetail';
 import { PageTitleBar } from './components/PageTitleBar';
 import { mockMessages } from './data/mockMessages';
 import { Message, MessageCategory } from './types/message';
-
+import { Home, ChevronRight } from "lucide-react";
+import { Link } from 'react-router-dom';
 export default function MessagesView() {
   // 所有消息
   const [messages, setMessages] = useState<Message[]>(mockMessages);
@@ -69,6 +70,22 @@ export default function MessagesView() {
 
   return (
     <div className="h-screen flex flex-col">
+      {/* 面包屑导航 */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-full mx-auto px-4">
+          <nav className="flex items-center py-3 text-sm">
+            <Link 
+              to="/" 
+              className="flex items-center text-gray-600 hover:text-blue-600 transition"
+            >
+              <Home className="w-4 h-4 mr-1" />
+              首页
+            </Link>
+            <ChevronRight className="w-4 h-4 mx-2 text-gray-400" />
+            <span className="text-blue-600 font-medium">消息中心</span>
+          </nav>
+        </div>
+      </div>
       {/* 页面标题栏（不是全局 Header） */}
         <PageTitleBar />
       

@@ -14,47 +14,52 @@ interface Review {
 
 const reviews: Review[] = [
   {
-    id: '1',
-    courseName: '数据结构与算法',
-    rating: 5,
-    comment: '张教授讲课非常清晰，作业量适中，考试题目公平，强烈推荐！',
-    timestamp: '5分钟前',
-    isAnonymous: false,
-    userName: '李同学'
+    id: '430171', // 课程号
+    courseName: '人类生存发展与核科学',
+    rating: 4,
+    comment: '课程内容非常容易理解，文科生也没太大理解难度。任务量小，可以刷分，挺难选的但据说补退选能蹲到。缺IV类通选的同学可冲！',
+    timestamp: '刚刚',
+    isAnonymous: true
   },
   {
-    id: '2',
+    id: '1630079',
+    courseName: '心理学导论',
+    rating: 4,
+    comment: '课程知识密度极大，完全舍不得玩手机，全程着急记笔记。老师的措辞、语速、逻辑都让人极度舒适。',
+    timestamp: '2小时前',
+    isAnonymous: true
+  },
+  {
+    id: '1339180',
+    courseName: '世界文化地理',
+    rating: 4,
+    comment: '自然地理部分是高中地理知识，人文地理部分也不会太学术，对高中选科地理的同学相当友好。给分状况好，在四类通识课里选就完事。',
+    timestamp: '3小时前',
+    isAnonymous: true
+  },
+  {
+    id: '3230020',
+    courseName: '政治学原理',
+    rating: 5,
+    comment: '伟大无需多言，mx老师yyds！内容涉及个人、集体、社会、国家、国际等多个话题，讲述基础理论和现实案例，关注时政和热点问题。',
+    timestamp: '1天前',
+    isAnonymous: true
+  },
+  {
+    id: '2838360',
     courseName: '微观经济学',
-    rating: 4,
-    comment: '课程内容丰富，案例分析很有趣，但是考试题目有点难。',
-    timestamp: '12分钟前',
-    isAnonymous: true
-  },
-  {
-    id: '3',
-    courseName: '操作系统原理',
     rating: 5,
-    comment: '陈教授的课程设计很合理，实验项目很有挑战性，学到了很多实际技能。',
-    timestamp: '23分钟前',
-    isAnonymous: false,
-    userName: '王同学'
-  },
-  {
-    id: '4',
-    courseName: '大学英语(3)',
-    rating: 4,
-    comment: '赵老师人很好，课堂互动多，对口语提升帮助很大。',
-    timestamp: '35分钟前',
+    comment: '老师人美心善，课程深入浅出，值得一选。和nsd中微对比可以感受到老师真的很用心在打磨课堂内容，有很多有趣的小例子。',
+    timestamp: '1天前',
     isAnonymous: true
   },
   {
-    id: '5',
-    courseName: '高等数学 A(1)',
-    rating: 3,
-    comment: '作业量比较大，但是老师讲解很详细，需要花时间消化。',
-    timestamp: '1小时前',
-    isAnonymous: false,
-    userName: '张同学'
+    id: '2939991',
+    courseName: '英美侵权法',
+    rating: 5,
+    comment: '老师讲案例会很有意思，助教和老师人很好。任务量超小，是既可以刷分也可以对侵权法有不少了解的好课。最后还是要夸夸超nice的老师和助教学长！',
+    timestamp: '2天前',
+    isAnonymous: true
   }
 ];
 
