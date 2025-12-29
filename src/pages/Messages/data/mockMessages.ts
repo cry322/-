@@ -52,7 +52,7 @@ export const mockMessages: Message[] = [
       name: '微观经济学',
       code: '2838360',
     },
-    relatedUrl: '/reviews/1',
+    relatedUrl: '/reviews/2838360',
   },
 
   {
@@ -77,7 +77,7 @@ export const mockMessages: Message[] = [
       name: '微观经济学',
       code: '2838360',
     },
-    relatedUrl: '/reviews/1',
+    relatedUrl: '/reviews/2838360',
   },
 
   // =========================
@@ -105,7 +105,7 @@ export const mockMessages: Message[] = [
       name: '民主的历史与现实',
       code: '2432210',
     },
-    relatedUrl: '/reviews/2',
+    relatedUrl: '/reviews/2432210',
   },
 
   {
@@ -127,7 +127,7 @@ export const mockMessages: Message[] = [
       name: '民主的历史与现实',
       code: '2432210',
     },
-    relatedUrl: '/reviews/2',
+    relatedUrl: '/reviews/2432210',
   },
 
   // 系统公告也给一个“真实测评”的入口（不虚构 id，只是引导去看一条真实测评）
@@ -151,6 +151,6 @@ export const mockMessages: Message[] = [
       name: '微观经济学',
       code: '2838360',
     },
-    relatedUrl: '/reviews/1',
+    relatedUrl: '/reviews/2838360',
   },
 ];
