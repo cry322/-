@@ -1,53 +1,88 @@
 ﻿import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import './ReviewDetailPage.css'; // 创建对应的 CSS 文件
-import courseData from '../CourseDetail/course_data.json';
+import './ReviewDetailPage.css';
+import reviewData from './review_data.json';
+
+// 定义数据类型
+interface ReviewData {
+  id: number;
+  courseId: string;
+  courseName: string;
+  teacher: string;
+  semester: string;
+  overallScore: number;
+  taskLoad: number;
+  difficulty: number;
+  grading: number;
+  teaching: number;
+  harvest: number;
+  content: string;
+  fullContent: string;
+  scoreRange: string;
+}
+
+interface CourseData {
+  id: number;
+  courseId: string;
+  name: string;
+  department: string;
+  credits: number;
+  category: string;
+  subCategory: string;
+  type: string;
+  semester: string;
+  assessment: string;
+}
+
+interface FullCourseData {
+  course: CourseData;
+  teachers: any[];
+  reviews: ReviewData[];
+}
+
+// Use shared global declaration in custom.d.ts; no local augmentation here.
 
 const ReviewDetailPage = () => {
-  const chartRef = useRef(null);
+  const { id } = useParams<{ id: string }>();
+  const chartRef = useRef<HTMLDivElement | null>(null);
   const [echartsLoaded, setEchartsLoaded] = useState(false);
   const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
   const [replyText, setReplyText] = useState('');
   const [showReplyInput, setShowReplyInput] = useState(false);
-  const { id } = useParams<{ id: string }>();
+  
+  // 数据状态
+  const [review, setReview] = useState<ReviewData | null>(null);
+  const [course, setCourse] = useState<CourseData | null>(null);
 
-  // 当前测评和课程信息
-  const [reviewData, setReviewData] = useState<any | null>(null);
-  const [courseInfo, setCourseInfo] = useState<any | null>(null);
-
-  // 根据路由参数查找对应的测评
+  // 根据ID加载数据
   useEffect(() => {
-    if (!id) return;
-    const reviewId = Number(id);
-
-    let foundReview: any | null = null;
-    let foundCourse: any | null = null;
-
-    (courseData as any[]).forEach((item: any) => {
-      if (foundReview) return;
-      const review = item.reviews?.find((r: any) => r.id === reviewId);
-      if (review) {
-        foundReview = review;
-        foundCourse = item.course;
+    if (id) {
+      const reviewId = parseInt(id);
+      
+      // 遍历所有课程数据
+      for (const courseItem of reviewData as FullCourseData[]) {
+        // 查找匹配的测评
+        const foundReview = courseItem.reviews.find(r => r.id === reviewId);
+        if (foundReview) {
+          setReview(foundReview);
+          setCourse(courseItem.course);
+          break;
+        }
       }
-    });
-
-    setReviewData(foundReview);
-    setCourseInfo(foundCourse);
+    }
   }, [id]);
 
   // 动态加载 ECharts
   useEffect(() => {
     const loadECharts = async () => {
       try {
-        // 如果已经全局加载了 ECharts，可以直接使用
-        if (typeof window.echarts !== 'undefined') {
+        if (typeof window !== 'undefined' && typeof window.echarts !== 'undefined') {
           setEchartsLoaded(true);
           return;
         }
 
-        // 动态导入 ECharts
-        const echarts = await import('echarts');
+        const echartsModule = await import('echarts');
+        const echarts = (echartsModule as any).default || echartsModule;
         window.echarts = echarts;
         setEchartsLoaded(true);
       } catch (error) {
@@ -60,9 +95,18 @@ const ReviewDetailPage = () => {
 
   // 初始化雷达图
   useEffect(() => {
-    if (!echartsLoaded || !chartRef.current || !reviewData) return;
+    if (!echartsLoaded || !chartRef.current || !review) return;
 
     const myChart = window.echarts.init(chartRef.current);
+
+    // 使用实际评分数据
+    const radarValues = [
+      review.taskLoad,
+      review.grading,
+      review.harvest,
+      review.difficulty,
+      review.teaching
+    ];
 
     const option = {
       radar: {
@@ -82,13 +126,7 @@ const ReviewDetailPage = () => {
       series: [{
         type: 'radar',
         data: [{
-          value: [
-            reviewData.taskLoad || 0,
-            reviewData.grading || 0,
-            reviewData.harvest || 0,
-            reviewData.difficulty || 0,
-            reviewData.teaching || 0
-          ],
+          value: radarValues,
           name: '评分',
           areaStyle: {
             color: 'rgba(24, 144, 255, 0.2)'
@@ -134,7 +172,7 @@ const ReviewDetailPage = () => {
       window.removeEventListener('resize', handleResize);
       myChart.dispose();
     };
-  }, [echartsLoaded, reviewData]);
+  }, [echartsLoaded, review]);
 
   // 创建星星评分组件
   const renderStars = (rating: number) => {
@@ -170,10 +208,8 @@ const ReviewDetailPage = () => {
   const handleReplySubmit = () => {
     if (replyText.trim() === '') return;
     
-    // 这里可以添加提交回复的逻辑
     console.log(`回复评论 ${replyToCommentId}: ${replyText}`);
     
-    // 清空输入框并关闭
     setReplyText('');
     setShowReplyInput(false);
     setReplyToCommentId(null);
@@ -228,8 +264,44 @@ const ReviewDetailPage = () => {
     }
   ];
 
-  // 标签数据
-  const tags = ['理论深入', '不考勤', '讲课生动', '论文要求高'];
+  // 标签数据（可以根据评分动态生成）
+  const generateTags = () => {
+    const tags = [];
+    if (!review) return ['理论深入', '不考勤', '讲课生动', '论文要求高'];
+    
+    if (review.taskLoad <= 2) tags.push('任务量少');
+    if (review.grading >= 4) tags.push('给分友好');
+    if (review.harvest >= 4) tags.push('收获大');
+    if (review.teaching >= 4) tags.push('讲课生动');
+    
+    if (review.fullContent.includes('论文')) tags.push('论文要求');
+    if (review.fullContent.includes('考试')) tags.push('考试');
+    if (review.fullContent.includes('签到')) tags.push('考勤');
+    if (review.fullContent.includes('pre') || review.fullContent.includes('展示')) tags.push('有展示');
+    
+    if (tags.length < 4) {
+      return [...tags, '理论深入', '课程充实'];
+    }
+    return tags.slice(0, 4);
+  };
+
+  const tags = generateTags();
+
+  // 如果数据还在加载中，显示加载状态
+  if (!review || !course) {
+    return (
+      <div className="review-detail-container">
+        <div className="main-content">
+          <div className="review-card">
+            <div className="loading-state">
+              <div className="loading-spinner"></div>
+              <div className="loading-text">加载测评中...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="review-detail-container">
@@ -237,23 +309,23 @@ const ReviewDetailPage = () => {
         <div className="review-card">
           {/* 顶部课程信息 */}
           <div className="course-info">
-            <h1 className="course-title">{courseInfo?.name ?? '课程测评详情'}</h1>
+            <h1 className="course-title">{course.name}</h1>
             <div className="course-meta">
               <div className="meta-item">
                 <span className="meta-icon">#</span>
-                <span>{courseInfo?.courseId ?? '--'}</span>
+                <span>{course.courseId}</span>
               </div>
               <div className="meta-item">
                 <span className="meta-icon">👨‍🏫</span>
-                <span>{reviewData?.teacher ?? '教师'}</span>
+                <span>{review.teacher}</span>
               </div>
               <div className="meta-item">
                 <span className="meta-icon">🏫</span>
-                <span>{courseInfo?.department ?? '开课院系'}</span>
+                <span>{course.department}</span>
               </div>
               <div className="meta-item">
                 <span className="meta-icon">📅</span>
-                <span>{reviewData?.semester ?? '学期'}</span>
+                <span>{review.semester || course.semester}</span>
               </div>
             </div>
           </div>
@@ -272,7 +344,7 @@ const ReviewDetailPage = () => {
               </div>
             </div>
             <div className="review-meta">
-              <div className="review-date">2025-8-15</div>
+              <div className="review-date">{review.semester}</div>
               <div className="review-views">
                 <span className="view-icon">👁️</span>
                 <span>1240次浏览</span>
@@ -284,11 +356,9 @@ const ReviewDetailPage = () => {
           <div className="rating-section">
             <div className="rating-content">
               <div className="overall-rating">
-                <div className="rating-score">
-                  {reviewData ? reviewData.overallScore.toFixed(1) : '--'}
-                </div>
+                <div className="rating-score">{review.overallScore.toFixed(1)}</div>
                 <div className="rating-stars">
-                  {renderStars(reviewData ? reviewData.overallScore : 0)}
+                  {renderStars(review.overallScore)}
                 </div>
                 <div className="rating-label">综合评分</div>
               </div>
@@ -304,15 +374,18 @@ const ReviewDetailPage = () => {
 
           {/* 评价正文 */}
           <div className="review-content">
-            <h2 className="review-title">非常优秀的心理学入门课程</h2>
+            <h2 className="review-title">
+              {review.content.split('\n')[0].length > 25 
+                ? review.content.split('\n')[0].slice(0, 25) + '...'
+                : review.content.split('\n')[0]
+              }
+            </h2>
             <div className="review-text">
-              <p>
-                毛利华老师的授课水平很高，既幽默风趣又深挚真诚，尽管经常拖堂几分钟到十几分钟不等，但也让人十分陶醉。这是dz大一下学期听得最认真也是最投入的好课，但却也是得分断档最低的（）。<br /><br />
-                课程有两次课堂作业（35%），一次被试（5%），白送考勤分数（10%）和期末考试（50%），尽管dz上课听得很认真，并且对于课上讲的东西自认为是基本完全吸收了，但是期末考的核心概念（163个）之中有约60%在课上并没有提到或者讲得很少，所以这也是一门教考分离比较严重的课（推荐阅读书目《心理学与生活》中确实都有这些概念，但是老师讲的章节里这些内容也并非都是重点，所以都列入期末考范围会造成一定的复习压力）。另外平时作业分dz得的很低，完成的态度是比较认真的，感觉也有自己的见解，可能是需要卷一下形式和字数，dz没有注意，算是交了学费。不同于一般交了作业就至少能得80-90%分数的课，心导的作业可能区分度还比较大，这一点想要得高分的同学要注意，可以做得更有创意或者写成规范完整的论文形式。<br /><br />
-                期末考的难度比较适中，能够忠实地反映复习情况而不是平时学习情况，dz考前看错了考试时间，复习比较仓促，感觉至少要两到三天的时间集中突击才能得到比较好的分数。<br /><br />
-                因此心导从内容上是一门实打实的超级好课，但是如果想要靠它刷分可能有些难度，因为期末复习的压力不小，平时也要注意作业完成的情况。<br /><br />
-                总之，还是非常非常推荐心导这门课程的，毛利华老师的确非常有魅力！尽管在通识里面可能不是给分最好的，但选择通识课的主要目的不就是为了拓展自己的知识边界吗？
-              </p>
+              {review.fullContent.split('\n').map((paragraph, index) => (
+                <p key={index}>
+                  {paragraph}
+                </p>
+              ))}
             </div>
           </div>
 
