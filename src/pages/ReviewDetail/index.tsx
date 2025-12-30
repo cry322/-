@@ -1,5 +1,7 @@
 ﻿import { useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import './ReviewDetailPage.css'; // 创建对应的 CSS 文件
+import courseData from '../CourseDetail/course_data.json';
 
 const ReviewDetailPage = () => {
   const chartRef = useRef(null);
@@ -7,6 +9,32 @@ const ReviewDetailPage = () => {
   const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
   const [replyText, setReplyText] = useState('');
   const [showReplyInput, setShowReplyInput] = useState(false);
+  const { id } = useParams<{ id: string }>();
+
+  // 当前测评和课程信息
+  const [reviewData, setReviewData] = useState<any | null>(null);
+  const [courseInfo, setCourseInfo] = useState<any | null>(null);
+
+  // 根据路由参数查找对应的测评
+  useEffect(() => {
+    if (!id) return;
+    const reviewId = Number(id);
+
+    let foundReview: any | null = null;
+    let foundCourse: any | null = null;
+
+    (courseData as any[]).forEach((item: any) => {
+      if (foundReview) return;
+      const review = item.reviews?.find((r: any) => r.id === reviewId);
+      if (review) {
+        foundReview = review;
+        foundCourse = item.course;
+      }
+    });
+
+    setReviewData(foundReview);
+    setCourseInfo(foundCourse);
+  }, [id]);
 
   // 动态加载 ECharts
   useEffect(() => {
@@ -32,7 +60,7 @@ const ReviewDetailPage = () => {
 
   // 初始化雷达图
   useEffect(() => {
-    if (!echartsLoaded || !chartRef.current) return;
+    if (!echartsLoaded || !chartRef.current || !reviewData) return;
 
     const myChart = window.echarts.init(chartRef.current);
 
@@ -54,7 +82,13 @@ const ReviewDetailPage = () => {
       series: [{
         type: 'radar',
         data: [{
-          value: [4.2, 4.5, 4.8, 3.9, 4.3],
+          value: [
+            reviewData.taskLoad || 0,
+            reviewData.grading || 0,
+            reviewData.harvest || 0,
+            reviewData.difficulty || 0,
+            reviewData.teaching || 0
+          ],
           name: '评分',
           areaStyle: {
             color: 'rgba(24, 144, 255, 0.2)'
@@ -85,7 +119,8 @@ const ReviewDetailPage = () => {
       }
     };
 
-    myChart.setOption(option);
+    // 这里直接断言为 any，避免与 ECharts 类型定义的细节冲突
+    myChart.setOption(option as any);
 
     // 响应窗口大小变化
     const handleResize = () => {
@@ -99,7 +134,7 @@ const ReviewDetailPage = () => {
       window.removeEventListener('resize', handleResize);
       myChart.dispose();
     };
-  }, [echartsLoaded]);
+  }, [echartsLoaded, reviewData]);
 
   // 创建星星评分组件
   const renderStars = (rating: number) => {
@@ -202,23 +237,23 @@ const ReviewDetailPage = () => {
         <div className="review-card">
           {/* 顶部课程信息 */}
           <div className="course-info">
-            <h1 className="course-title">心理学导论</h1>
+            <h1 className="course-title">{courseInfo?.name ?? '课程测评详情'}</h1>
             <div className="course-meta">
               <div className="meta-item">
                 <span className="meta-icon">#</span>
-                <span>1630079</span>
+                <span>{courseInfo?.courseId ?? '--'}</span>
               </div>
               <div className="meta-item">
                 <span className="meta-icon">👨‍🏫</span>
-                <span>毛利华</span>
+                <span>{reviewData?.teacher ?? '教师'}</span>
               </div>
               <div className="meta-item">
                 <span className="meta-icon">🏫</span>
-                <span>心理与认知科学学院</span>
+                <span>{courseInfo?.department ?? '开课院系'}</span>
               </div>
               <div className="meta-item">
                 <span className="meta-icon">📅</span>
-                <span>2025春季</span>
+                <span>{reviewData?.semester ?? '学期'}</span>
               </div>
             </div>
           </div>
@@ -249,9 +284,11 @@ const ReviewDetailPage = () => {
           <div className="rating-section">
             <div className="rating-content">
               <div className="overall-rating">
-                <div className="rating-score">4.5</div>
+                <div className="rating-score">
+                  {reviewData ? reviewData.overallScore.toFixed(1) : '--'}
+                </div>
                 <div className="rating-stars">
-                  {renderStars(4.5)}
+                  {renderStars(reviewData ? reviewData.overallScore : 0)}
                 </div>
                 <div className="rating-label">综合评分</div>
               </div>

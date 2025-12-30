@@ -197,6 +197,7 @@ export default function CourseList() {
             <SearchBar
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
+              courses={courses}
             />
             
             {/* 可以在这里添加一些快速筛选标签 */}
