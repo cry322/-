@@ -8,15 +8,15 @@ import {
   Home,
   Menu,
   X,
-} from "lucide-react";
-import logo from "../../assets/选课宝典logo.png";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+} from 'lucide-react';
+import logo from '../../assets/选课宝典logo.png';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
 
 export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -30,10 +30,10 @@ export function Header() {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setShowSuggestions(false);
       }
-      
+
       // 关闭移动菜单
       if (
-        mobileMenuRef.current && 
+        mobileMenuRef.current &&
         !mobileMenuRef.current.contains(event.target as Node) &&
         !(event.target as HTMLElement).closest('[data-menu-button]')
       ) {
@@ -41,9 +41,9 @@ export function Header() {
       }
     }
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
@@ -53,7 +53,7 @@ export function Header() {
     if (trimmedQuery) {
       navigate(`/courses?q=${encodeURIComponent(trimmedQuery)}`);
       setShowSuggestions(false);
-      setSearchQuery("");
+      setSearchQuery(trimmedQuery);
       // 在移动端搜索后关闭菜单
       if (isMobileMenuOpen) {
         setIsMobileMenuOpen(false);
@@ -63,9 +63,9 @@ export function Header() {
 
   // 处理键盘事件
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       handleSearch();
-    } else if (e.key === "Escape") {
+    } else if (e.key === 'Escape') {
       setShowSuggestions(false);
     }
   };
@@ -82,12 +82,12 @@ export function Header() {
 
   // 示例搜索建议
   const searchSuggestions = [
-    "计算机科学导论",
-    "数据结构",
-    "微积分",
-    "大学英语",
-    "线性代数",
-    "概率论与数理统计",
+    '计算机科学导论',
+    '数据结构',
+    '微积分',
+    '大学英语',
+    '线性代数',
+    '概率论与数理统计',
   ];
 
   return (
@@ -127,9 +127,9 @@ export function Header() {
               <Link
                 to="/"
                 className={`flex items-center gap-1.5 transition-colors px-3 py-2 rounded-lg ${
-                  location.pathname === "/"
-                    ? "bg-blue-50 text-blue-600 font-medium"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                  location.pathname === '/'
+                    ? 'bg-blue-50 text-blue-600 font-medium'
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                 }`}
               >
                 <Home className="w-4 h-4" />
@@ -138,9 +138,9 @@ export function Header() {
               <Link
                 to="/courses"
                 className={`flex items-center gap-1.5 transition-colors px-3 py-2 rounded-lg ${
-                  location.pathname === "/courses" || location.pathname.startsWith("/courses/")
-                    ? "bg-blue-50 text-blue-600 font-medium"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                  location.pathname === '/courses' || location.pathname.startsWith('/courses/')
+                    ? 'bg-blue-50 text-blue-600 font-medium'
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                 }`}
               >
                 <BookOpen className="w-4 h-4" />
@@ -149,9 +149,9 @@ export function Header() {
               <Link
                 to="/reviews"
                 className={`flex items-center gap-1.5 transition-colors px-3 py-2 rounded-lg ${
-                  location.pathname === "/reviews"
-                    ? "bg-blue-50 text-blue-600 font-medium"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                  location.pathname === '/reviews'
+                    ? 'bg-blue-50 text-blue-600 font-medium'
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                 }`}
               >
                 <ClipboardCheck className="w-4 h-4" />
@@ -160,24 +160,24 @@ export function Header() {
               <Link
                 to="/help"
                 className={`flex items-center gap-1.5 transition-colors px-3 py-2 rounded-lg ${
-                  location.pathname === "/help"
-                    ? "bg-blue-50 text-blue-600 font-medium"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                  location.pathname === '/help'
+                    ? 'bg-blue-50 text-blue-600 font-medium'
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                 }`}
               >
                 <HelpCircle className="w-4 h-4" />
                 <span>帮助中心</span>
               </Link>
             </nav>
-            
+
             {/* 中等屏幕显示的简化导航 - 只有图标 */}
             <nav className="hidden lg:flex xl:hidden items-center gap-1 ml-4">
               <Link
                 to="/"
                 className={`p-2 rounded-lg transition-colors ${
-                  location.pathname === "/"
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                  location.pathname === '/'
+                    ? 'bg-blue-50 text-blue-600'
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                 }`}
                 title="首页"
               >
@@ -186,9 +186,9 @@ export function Header() {
               <Link
                 to="/courses"
                 className={`p-2 rounded-lg transition-colors ${
-                  location.pathname === "/courses" || location.pathname.startsWith("/courses/")
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                  location.pathname === '/courses' || location.pathname.startsWith('/courses/')
+                    ? 'bg-blue-50 text-blue-600'
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                 }`}
                 title="课程库"
               >
@@ -197,9 +197,9 @@ export function Header() {
               <Link
                 to="/reviews"
                 className={`p-2 rounded-lg transition-colors ${
-                  location.pathname === "/reviews"
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                  location.pathname === '/reviews'
+                    ? 'bg-blue-50 text-blue-600'
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                 }`}
                 title="测评库"
               >
@@ -208,9 +208,9 @@ export function Header() {
               <Link
                 to="/help"
                 className={`p-2 rounded-lg transition-colors ${
-                  location.pathname === "/help"
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                  location.pathname === '/help'
+                    ? 'bg-blue-50 text-blue-600'
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                 }`}
                 title="帮助中心"
               >
@@ -228,7 +228,7 @@ export function Header() {
                 <input
                   type="text"
                   value={searchQuery}
-                  onChange={(e) => {
+                  onChange={e => {
                     setSearchQuery(e.target.value);
                     setShowSuggestions(e.target.value.length > 0);
                   }}
@@ -262,21 +262,16 @@ export function Header() {
                     </div>
                   </button>
 
-                  <div className="px-4 pt-3 pb-1 text-xs text-gray-400 font-medium">
-                    热门搜索
-                  </div>
+                  <div className="px-4 pt-3 pb-1 text-xs text-gray-400 font-medium">热门搜索</div>
                   {searchSuggestions
-                    .filter(suggestion => 
+                    .filter(suggestion =>
                       suggestion.toLowerCase().includes(searchQuery.toLowerCase())
                     )
                     .slice(0, 5)
                     .map((suggestion, index) => (
                       <button
                         key={index}
-                        onClick={() => {
-                          setSearchQuery(suggestion);
-                          handleSearch(suggestion);
-                        }}
+                        onClick={() => handleSearch(suggestion)}
                         className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm"
                       >
                         <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
@@ -297,8 +292,8 @@ export function Header() {
             </button>
 
             {/* 消息通知 */}
-            <Link 
-              to="/messages" 
+            <Link
+              to="/messages"
               className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
               onClick={closeMobileMenu}
             >
@@ -326,9 +321,7 @@ export function Header() {
         <div
           ref={mobileMenuRef}
           className={`xl:hidden fixed top-16 left-0 right-0 bg-white border-b border-gray-200 shadow-lg transition-all duration-300 ease-in-out z-40 ${
-            isMobileMenuOpen
-              ? "max-h-screen opacity-100 visible"
-              : "max-h-0 opacity-0 invisible"
+            isMobileMenuOpen ? 'max-h-screen opacity-100 visible' : 'max-h-0 opacity-0 invisible'
           }`}
         >
           <div className="px-4 py-4 space-y-4">
@@ -339,7 +332,7 @@ export function Header() {
                 <input
                   type="text"
                   value={searchQuery}
-                  onChange={(e) => {
+                  onChange={e => {
                     setSearchQuery(e.target.value);
                     setShowSuggestions(e.target.value.length > 0);
                   }}
@@ -374,17 +367,14 @@ export function Header() {
                   </button>
 
                   {searchSuggestions
-                    .filter(suggestion => 
+                    .filter(suggestion =>
                       suggestion.toLowerCase().includes(searchQuery.toLowerCase())
                     )
                     .slice(0, 5)
                     .map((suggestion, index) => (
                       <button
                         key={index}
-                        onClick={() => {
-                          setSearchQuery(suggestion);
-                          handleSearch(suggestion);
-                        }}
+                        onClick={() => handleSearch(suggestion)}
                         className="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center gap-2 text-sm"
                       >
                         <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
@@ -400,9 +390,9 @@ export function Header() {
               <Link
                 to="/"
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  location.pathname === "/"
-                    ? "bg-blue-50 text-blue-600 font-medium"
-                    : "text-gray-700 hover:bg-gray-100"
+                  location.pathname === '/'
+                    ? 'bg-blue-50 text-blue-600 font-medium'
+                    : 'text-gray-700 hover:bg-gray-100'
                 }`}
                 onClick={closeMobileMenu}
               >
@@ -412,9 +402,9 @@ export function Header() {
               <Link
                 to="/courses"
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  location.pathname === "/courses" || location.pathname.startsWith("/courses/")
-                    ? "bg-blue-50 text-blue-600 font-medium"
-                    : "text-gray-700 hover:bg-gray-100"
+                  location.pathname === '/courses' || location.pathname.startsWith('/courses/')
+                    ? 'bg-blue-50 text-blue-600 font-medium'
+                    : 'text-gray-700 hover:bg-gray-100'
                 }`}
                 onClick={closeMobileMenu}
               >
@@ -424,9 +414,9 @@ export function Header() {
               <Link
                 to="/reviews"
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  location.pathname === "/reviews"
-                    ? "bg-blue-50 text-blue-600 font-medium"
-                    : "text-gray-700 hover:bg-gray-100"
+                  location.pathname === '/reviews'
+                    ? 'bg-blue-50 text-blue-600 font-medium'
+                    : 'text-gray-700 hover:bg-gray-100'
                 }`}
                 onClick={closeMobileMenu}
               >
@@ -436,23 +426,23 @@ export function Header() {
               <Link
                 to="/help"
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  location.pathname === "/help"
-                    ? "bg-blue-50 text-blue-600 font-medium"
-                    : "text-gray-700 hover:bg-gray-100"
+                  location.pathname === '/help'
+                    ? 'bg-blue-50 text-blue-600 font-medium'
+                    : 'text-gray-700 hover:bg-gray-100'
                 }`}
                 onClick={closeMobileMenu}
               >
                 <HelpCircle className="w-5 h-5 flex-shrink-0" />
                 <span>帮助中心</span>
               </Link>
-              
+
               {/* 移动端额外的用户相关链接 */}
               <Link
                 to="/profile"
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  location.pathname === "/profile"
-                    ? "bg-blue-50 text-blue-600 font-medium"
-                    : "text-gray-700 hover:bg-gray-100"
+                  location.pathname === '/profile'
+                    ? 'bg-blue-50 text-blue-600 font-medium'
+                    : 'text-gray-700 hover:bg-gray-100'
                 }`}
                 onClick={closeMobileMenu}
               >
@@ -462,9 +452,9 @@ export function Header() {
               <Link
                 to="/messages"
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  location.pathname === "/messages"
-                    ? "bg-blue-50 text-blue-600 font-medium"
-                    : "text-gray-700 hover:bg-gray-100"
+                  location.pathname === '/messages'
+                    ? 'bg-blue-50 text-blue-600 font-medium'
+                    : 'text-gray-700 hover:bg-gray-100'
                 }`}
                 onClick={closeMobileMenu}
               >

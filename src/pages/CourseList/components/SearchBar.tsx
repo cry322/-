@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { Search } from 'lucide-react';
-
 
 interface SearchBarProps {
   searchQuery: string;
@@ -13,6 +12,7 @@ const STORAGE_KEY = 'course_search_history';
 export function SearchBar({ searchQuery, setSearchQuery, courses }: SearchBarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     try {
@@ -20,12 +20,26 @@ export function SearchBar({ searchQuery, setSearchQuery, courses }: SearchBarPro
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
-          setHistory(parsed.filter((item) => typeof item === 'string'));
+          setHistory(parsed.filter(item => typeof item === 'string'));
         }
       }
     } catch {
       // ignore
     }
+  }, []);
+
+  // 点击外部关闭搜索建议
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const saveHistory = (next: string[]) => {
@@ -43,10 +57,7 @@ export function SearchBar({ searchQuery, setSearchQuery, courses }: SearchBarPro
     setIsOpen(false);
     if (!trimmed) return;
 
-    const next = [
-      trimmed,
-      ...history.filter((item) => item !== trimmed),
-    ].slice(0, 10);
+    const next = [trimmed, ...history.filter(item => item !== trimmed)].slice(0, 10);
     saveHistory(next);
   };
 
@@ -54,16 +65,14 @@ export function SearchBar({ searchQuery, setSearchQuery, courses }: SearchBarPro
 
   const historySuggestions = useMemo(() => {
     if (!normalizedQuery) return history;
-    return history.filter((item) =>
-      item.toLowerCase().includes(normalizedQuery)
-    );
+    return history.filter(item => item.toLowerCase().includes(normalizedQuery));
   }, [history, normalizedQuery]);
 
   const courseSuggestions = useMemo(() => {
     if (!normalizedQuery) return [] as string[];
     const set = new Set<string>();
 
-    courses.forEach((course) => {
+    courses.forEach(course => {
       if (course.courseName.toLowerCase().includes(normalizedQuery)) {
         set.add(course.courseName);
       }
@@ -85,7 +94,7 @@ export function SearchBar({ searchQuery, setSearchQuery, courses }: SearchBarPro
     setIsOpen(true);
   };
 
-  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
+  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = e => {
     if (e.key === 'Enter') {
       handleSelect(searchQuery);
     }
@@ -97,23 +106,20 @@ export function SearchBar({ searchQuery, setSearchQuery, courses }: SearchBarPro
 
   return (
     <div className="mb-6 bg-white/80 backdrop-blur-sm p-6 rounded-xl border border-purple-100 shadow-sm relative z-30">
-      <div className="relative">
+      <div className="relative" ref={searchRef}>
         <input
           type="text"
           value={searchQuery}
-          onChange={(e) => handleInputChange(e.target.value)}
+          onChange={e => handleInputChange(e.target.value)}
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
-          placeholder="请在此处搜索课程/教师名（请写全称）"
+          placeholder="请在此处搜索课程/教师名（请写官方名称）"
           className="w-full px-4 py-3 pr-12 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300"
         />
         <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-purple-400" size={24} />
 
-        {isOpen && (
-          <div
-            className="absolute left-0 right-0 mt-2 bg-white border border-purple-100 rounded-xl shadow-lg z-50 max-h-72 overflow-y-auto"
-            onMouseDown={(e) => e.preventDefault()}
-          >
+        {isOpen && hasSuggestions && (
+          <div className="absolute left-0 right-0 mt-2 bg-white border border-purple-100 rounded-xl shadow-lg z-50 max-h-72 overflow-y-auto">
             {historySuggestions.length > 0 && (
               <div className="px-4 pt-3 pb-1 text-xs text-gray-400 flex items-center justify-between">
                 <span>搜索历史</span>
@@ -127,7 +133,7 @@ export function SearchBar({ searchQuery, setSearchQuery, courses }: SearchBarPro
               </div>
             )}
 
-            {historySuggestions.map((item) => (
+            {historySuggestions.map(item => (
               <button
                 key={`history-${item}`}
                 type="button"
@@ -140,12 +146,10 @@ export function SearchBar({ searchQuery, setSearchQuery, courses }: SearchBarPro
             ))}
 
             {courseSuggestions.length > 0 && (
-              <div className="px-4 pt-3 pb-1 text-xs text-gray-400">
-                智能联想
-              </div>
+              <div className="px-4 pt-3 pb-1 text-xs text-gray-400">智能联想</div>
             )}
 
-            {courseSuggestions.map((item) => (
+            {courseSuggestions.map(item => (
               <button
                 key={`suggest-${item}`}
                 type="button"

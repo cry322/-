@@ -52,7 +52,7 @@ export function HeroSection() {
                 </span>
               </div>
               <p className="text-blue-100 text-base md:text-lg">
-                真实评价 · 匿名保护 · 智能推荐
+                真实评价 · 匿名保护 · 结构评分
               </p>
             </div>
 

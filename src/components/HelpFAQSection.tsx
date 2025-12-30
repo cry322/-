@@ -47,7 +47,6 @@ const HelpFAQSection: React.FC = () => {
             <li><strong>评分权重：</strong>近期测评（近1年内）的权重更高，确保评分反映最新的教学情况</li>
             <li><strong>评分维度：</strong>除了总体评分，我们还统计课程难度、作业量、收获度和趣味性等细分维度</li>
             <li><strong>数据清洗：</strong>系统会过滤掉明显异常的评分（如大量极端评分），确保评分的公正性</li>
-            <li><strong>最低样本：</strong>一门课程需要至少3个有效测评才会显示综合评分</li>
           </ul>
           <div className="mt-4 p-3 bg-green-50 rounded-lg">
             <p className="text-sm text-green-700">
@@ -66,11 +65,10 @@ const HelpFAQSection: React.FC = () => {
         <div className="space-y-3">
           <p>我们以课程号为主要区分标准，同时提供灵活的筛选和对比功能：</p>
           <ul className="list-disc pl-5 space-y-2">
-            <li><strong>课程号区分：</strong>同一课程号（如"CS101"）下的课程会聚合展示，无论教师是谁</li>
+            <li><strong>课程号区分：</strong>同一课程号下的课程会聚合展示，无论教师是谁</li>
             <li><strong>教师筛选：</strong>在课程详情页，您可以使用教师筛选器查看特定教师的评分和评价</li>
             <li><strong>教师对比：</strong>可以同时查看多位教师在同一课程上的评分对比和评价分布</li>
             <li><strong>评价标注：</strong>每条评价都会标注对应的教师和学期，方便您筛选特定教师的评价</li>
-            <li><strong>教师详情页：</strong>点击教师姓名可以进入该教师的详情页，查看其所有课程的评价情况</li>
           </ul>
           <div className="mt-4 p-3 bg-purple-50 rounded-lg">
             <p className="text-sm text-purple-700">
@@ -163,7 +161,6 @@ const HelpFAQSection: React.FC = () => {
             <li><strong>隐私设置：</strong>可以控制哪些信息对其他用户可见（如评价历史、收藏课程等）</li>
             <li><strong>通知偏好：</strong>设置接收哪些类型的通知（新回复、点赞、系统公告等）</li>
             <li><strong>账号安全：</strong>可以修改密码、绑定/更换邮箱、查看登录历史等</li>
-            <li><strong>数据导出：</strong>支持导出您的所有评价、收藏等个人数据</li>
           </ul>
           <div className="mt-4 p-3 bg-gray-50 rounded-lg">
             <p className="text-sm text-gray-700">
