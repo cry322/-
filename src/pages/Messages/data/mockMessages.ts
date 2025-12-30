@@ -28,7 +28,7 @@ export const mockMessages: Message[] = [
       name: '微观经济学',
       code: '2838360',
     },
-    relatedUrl: '/reviews/2838360',
+    relatedUrl: '/reviews/1',
   },
 
   {
@@ -52,7 +52,7 @@ export const mockMessages: Message[] = [
       name: '微观经济学',
       code: '2838360',
     },
-    relatedUrl: '/reviews/2838360',
+    relatedUrl: '/reviews/1',
   },
 
   {
@@ -77,7 +77,7 @@ export const mockMessages: Message[] = [
       name: '微观经济学',
       code: '2838360',
     },
-    relatedUrl: '/reviews/2838360',
+    relatedUrl: '/reviews/1',
   },
 
   // =========================
@@ -105,7 +105,7 @@ export const mockMessages: Message[] = [
       name: '民主的历史与现实',
       code: '2432210',
     },
-    relatedUrl: '/reviews/2432210',
+    relatedUrl: '/reviews/2',
   },
 
   {
@@ -127,7 +127,7 @@ export const mockMessages: Message[] = [
       name: '民主的历史与现实',
       code: '2432210',
     },
-    relatedUrl: '/reviews/2432210',
+    relatedUrl: '/reviews/2',
   },
 
   // 系统公告也给一个“真实测评”的入口（不虚构 id，只是引导去看一条真实测评）
@@ -142,8 +142,7 @@ export const mockMessages: Message[] = [
     },
     title: '平台功能更新说明',
     preview: '消息中心已支持“查看详情”跳转到测评详情页。',
-    content:
-      '消息中心已支持“查看详情”跳转到测评详情页。你可以点击下方按钮查看示例测评详情（不会影响你的数据）。',
+    content: '消息中心已支持“查看详情”跳转到测评详情页。你可以点击下方按钮查看示例测评详情。',
     time: '5小时前',
     isRead: false,
     course: {
@@ -151,6 +150,6 @@ export const mockMessages: Message[] = [
       name: '微观经济学',
       code: '2838360',
     },
-    relatedUrl: '/reviews/2838360',
+    relatedUrl: '/reviews/1',
   },
 ];
