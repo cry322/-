@@ -59,11 +59,6 @@ const router = createBrowserRouter([
         path: 'courses/:courseId/write-review',
         element: <WriteReviewView />,
       },
-
-      {
-        path: '/courses/:courseId/write-review',
-        element: <WriteReviewView />,
-      },
       {
         path: 'help',
         element: <HelpCenterPage />,

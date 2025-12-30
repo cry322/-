@@ -1,9 +1,15 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useLocation,Outlet } from 'react-router-dom';
 import { Header } from './components/layout/Header';
 import './App.css';
 
 const App = () => {
+  const location = useLocation();
+  
+  useEffect(() => {
+    // 每次路由变化时滚动到顶部
+    window.scrollTo(0, 0);
+  }, [location.pathname]); // 监听路径变化
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />

@@ -43,6 +43,68 @@ export function ReviewCard({
     return displayValue;
   };
 
+  // 格式化日期显示
+  const formatDate = (dateStr: string) => {
+    try {
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return dateStr;
+      return date.toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  // 渲染星星评分（1-5分制）
+  const renderStars = () => {
+    const stars = [];
+    const score = overallScore;
+    
+    // 确保分数在1-5之间
+    const normalizedScore = Math.min(Math.max(score, 0), 5);
+    const fullStars = Math.floor(normalizedScore);
+    const hasHalfStar = normalizedScore - fullStars >= 0.5;
+    
+    // 满星
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(
+        <Star
+          key={`full-${i}`}
+          className="w-4 h-4 text-yellow-500 fill-current"
+        />
+      );
+    }
+    
+    // 半星
+    if (hasHalfStar) {
+      stars.push(
+        <div key="half" className="relative">
+          <Star className="w-4 h-4 text-gray-300" />
+          <Star 
+            className="w-4 h-4 text-yellow-500 fill-current absolute left-0 top-0 overflow-hidden" 
+            style={{ clipPath: 'inset(0 50% 0 0)' }}
+          />
+        </div>
+      );
+    }
+    
+    // 空星
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(
+        <Star
+          key={`empty-${i}`}
+          className="w-4 h-4 text-gray-300"
+        />
+      );
+    }
+    
+    return stars;
+  };
+
   return (
     <Link
       to={`/reviews/${id}`}
@@ -60,44 +122,37 @@ export function ReviewCard({
               <span>{teacher}</span>
             </div>
             <span className="text-gray-400">·</span>
-            <span>{semester}</span>
+            <span>{semester || "未指定学期"}</span>
           </div>
         </div>
         
         {/* 当前排序标准下的评分/日期 */}
         <div className="flex flex-col items-center ml-4 min-w-[80px]">
-          <div className={`text-3xl mb-1 font-bold ${getScoreColor(sortScore)}`}>
+          <div className={`text-2xl mb-1 font-bold ${getScoreColor(sortScore)}`}>
             {formatDisplayValue()}
           </div>
-          <div className="text-s text-gray-500 text-center">{sortLabel}</div>
+          <div className="text-xs text-gray-500 text-center">{sortLabel}</div>
         </div>
       </div>
 
-      {/* 星星评分显示（保持不变） */}
+      {/* 星星评分显示（修改为1-5分制） */}
       <div className="flex items-center mb-3">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`w-4 h-4 ${
-              star <= Math.round(overallScore)
-                ? 'text-yellow-500 fill-current'
-                : 'text-gray-300'
-            }`}
-          />
-        ))}
-        <span className="ml-2 text-sm text-gray-600">{overallScore.toFixed(1)}分</span>
+        <div className="flex items-center mr-2">
+          {renderStars()}
+        </div>
+        <span className="text-sm text-gray-600">{overallScore.toFixed(1)}分【综合】</span>
       </div>
 
       {/* 测评内容预览 */}
-      <p className="text-gray-700 mb-3 line-clamp-3">
-        {content}
+      <p className="text-gray-700 mb-4 line-clamp-3 text-sm leading-relaxed">
+        {content.length > 200 ? `${content.substring(0, 200)}...` : content}
       </p>
 
       {/* 底部信息 */}
       <div className="flex items-center justify-between pt-3 border-t border-gray-100">
         <div className="flex items-center gap-1 text-xs text-gray-500">
           <Calendar className="w-3.5 h-3.5" />
-          <span>发布于 {publishDate}</span>
+          <span>发布于 {formatDate(publishDate)}</span>
         </div>
         <div className="text-xs text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
           查看详情 →
