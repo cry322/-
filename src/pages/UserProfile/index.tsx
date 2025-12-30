@@ -1,6 +1,7 @@
 ﻿import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Home, ChevronRight } from "lucide-react";
+
 const UserProfilePage = () => {
   const [activePage, setActivePage] = useState<string>('reviews-page');
   const navigate = useNavigate();
@@ -40,11 +41,6 @@ const UserProfilePage = () => {
     navigate(`/reviews/${reviewId}`);
   };
 
-  // 编辑资料
-  const editProfile = () => {
-    alert('编辑资料功能开发中...');
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 pt-4">
       <div className="max-w-7xl mx-auto px-4 pt-6 pb-2">
@@ -75,9 +71,9 @@ const UserProfilePage = () => {
                   <h1 className="text-2xl md:text-3xl font-bold mb-2">kiki</h1>
                   <p className="text-gray-500 text-sm">北京大学 · 大三</p>
                 </div>
+                {/* 编辑资料按钮 - 静态展示，无点击事件 */}
                 <button 
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors text-sm w-full md:w-auto"
-                  onClick={editProfile}
+                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm w-full md:w-auto cursor-default"
                 >
                   编辑资料
                 </button>
@@ -93,7 +89,7 @@ const UserProfilePage = () => {
                   <div className="text-gray-600 text-sm">发布测评</div>
                 </div>
                 <div className="text-center p-4 bg-green-50 rounded-xl">
-                  <div className="text-2xl font-bold text-green-600 mb-1">5</div>
+                  <div className="text-2xl font-bold text-green-600 mb-1">4</div>
                   <div className="text-gray-600 text-sm">选修课程</div>
                 </div>
                 <div className="text-center p-4 bg-purple-50 rounded-xl">
@@ -154,10 +150,10 @@ const UserProfilePage = () => {
             >
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h3 className="font-bold text-lg mb-1">政治学原理</h3>
-                  <p className="text-sm text-gray-500">3230900 · 2024秋季</p>
+                  <h3 className="font-bold text-lg mb-1">微观经济学</h3>
+                  <p className="text-sm text-gray-500">2838360 · 2024秋季</p>
                 </div>
-                <div className="text-blue-600 font-bold text-lg">4.3</div>
+                <div className="text-blue-600 font-bold text-lg">5.0</div>
               </div>
               <p className="text-gray-600 text-sm mb-3">这门课非常有趣，老师讲课生动，能够引发思考...</p>
               <div className="flex gap-4 text-sm text-gray-500">
@@ -173,10 +169,10 @@ const UserProfilePage = () => {
             >
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h3 className="font-bold text-lg mb-1">地震概论</h3>
-                  <p className="text-sm text-gray-500">1233170 · 2024秋季</p>
+                  <h3 className="font-bold text-lg mb-1">民主的历史与现实</h3>
+                  <p className="text-sm text-gray-500">2432210</p>
                 </div>
-                <div className="text-blue-600 font-bold text-lg">4.1</div>
+                <div className="text-blue-600 font-bold text-lg">4.0</div>
               </div>
               <p className="text-gray-600 text-sm mb-3">轻松愉快的一门课，老师讲解深入浅出...</p>
               <div className="flex gap-4 text-sm text-gray-500">
@@ -192,8 +188,8 @@ const UserProfilePage = () => {
             >
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h3 className="font-bold text-lg mb-1">英美侵权法</h3>
-                  <p className="text-sm text-gray-500">2939991 · 2024春季</p>
+                  <h3 className="font-bold text-lg mb-1">世界文化地理</h3>
+                  <p className="text-sm text-gray-500">1339180 · 2024秋季</p>
                 </div>
                 <div className="text-blue-600 font-bold text-lg">4.5</div>
               </div>
@@ -241,7 +237,7 @@ const UserProfilePage = () => {
                   className="flex-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors text-sm"
                   onClick={(e) => {
                     e.stopPropagation();
-                    viewMyReview('3230900');
+                    viewMyReview('21');
                   }}
                 >
                   我的测评
@@ -280,7 +276,7 @@ const UserProfilePage = () => {
                   className="flex-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors text-sm"
                   onClick={(e) => {
                     e.stopPropagation();
-                    viewMyReview('1233170');
+                    viewMyReview('9');
                   }}
                 >
                   我的测评
@@ -319,7 +315,7 @@ const UserProfilePage = () => {
                   className="flex-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors text-sm"
                   onClick={(e) => {
                     e.stopPropagation();
-                    viewMyReview('2939991');
+                    viewMyReview('26');
                   }}
                 >
                   我的测评
@@ -373,7 +369,7 @@ const UserProfilePage = () => {
           <div className="space-y-4">
             <div 
               className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => viewCommentSource('1')}
+              onClick={() => viewCommentSource('21')}
             >
               <div className="text-sm text-gray-500 mb-2">
                 评论了 <span className="text-blue-600">@王同学</span> 的测评 · 2天前
@@ -393,7 +389,7 @@ const UserProfilePage = () => {
 
             <div 
               className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => viewCommentSource('2')}
+              onClick={() => viewCommentSource('37')}
             >
               <div className="text-sm text-gray-500 mb-2">
                 评论了 <span className="text-blue-600">@张老师的学生</span> 的测评 · 4天前
@@ -418,7 +414,7 @@ const UserProfilePage = () => {
           <div className="space-y-4">
             <div 
               className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => viewFavoriteReview('1')}
+              onClick={() => viewFavoriteReview('32')}
             >
               <div className="flex gap-4">
                 <img 
@@ -434,7 +430,7 @@ const UserProfilePage = () => {
                     </div>
                     <div className="text-blue-600 font-bold">4.8</div>
                   </div>
-                  <h3 className="font-bold text-lg mb-2">数据结构与算法 - 值得推荐</h3>
+                  <h3 className="font-bold text-lg mb-2">数据科学导引C - 值得推荐</h3>
                   <p className="text-gray-600 text-sm mb-3">
                     非常推荐这门课！虽然作业量确实比较大，但是每次作业都能学到很多东西...
                   </p>
@@ -448,7 +444,7 @@ const UserProfilePage = () => {
 
             <div 
               className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => viewFavoriteReview('2')}
+              onClick={() => viewFavoriteReview('45')}
             >
               <div className="flex gap-4">
                 <img 
