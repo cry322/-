@@ -1,4 +1,4 @@
-import { Bell, MessageCircle, Heart, BookOpen, CheckCircle, XCircle, AtSign } from 'lucide-react';
+import { Bell, MessageCircle, Heart, CheckCircle, XCircle, AtSign } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Message, MessageType } from '../types/message';
 

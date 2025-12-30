@@ -5,7 +5,6 @@ import {
   Award,
   Lightbulb,
   Scale,
-  HelpCircle,
   BookOpen,
   AlertCircle,
   Star,
@@ -22,6 +21,12 @@ export default function WriteReviewView() {
   const navigate = useNavigate();
   const { courseId } = useParams<{ courseId?: string }>();
   const hasCourse = Boolean(courseId);
+
+  const courseNameMap: Record<string, string> = {
+    '2838360': '微观经济学',
+    '2432210': '民主的历史与现实',
+  };
+  const courseName = courseId && courseNameMap[courseId] ? courseNameMap[courseId] : null;
 
   /* ================= 状态 ================= */
   const [ratings, setRatings] = useState<Record<string, number>>({
@@ -59,12 +64,42 @@ export default function WriteReviewView() {
 
   /* ================= 常量 ================= */
   const ratingDimensions = [
-    { id: 'overall', label: '综合评分', icon: <Star className="w-5 h-5" />, description: '对课程整体打分' },
-    { id: 'teaching', label: '教学质量', icon: <GraduationCap className="w-5 h-5" />, description: '讲课清晰度、教学方法' },
-    { id: 'workload', label: '任务量', icon: <FileText className="w-5 h-5" />, description: '课业负担程度' },
-    { id: 'grading', label: '给分友好度', icon: <Award className="w-5 h-5" />, description: '成绩评定宽松度' },
-    { id: 'learning', label: '课堂收获', icon: <Lightbulb className="w-5 h-5" />, description: '知识获得与能力提升' },
-    { id: 'assessment', label: '课程难度', icon: <Scale className="w-5 h-5" />, description: '考试内容与难度' },
+    {
+      id: 'overall',
+      label: '综合评分',
+      icon: <Star className="w-5 h-5" />,
+      description: '对课程整体打分',
+    },
+    {
+      id: 'teaching',
+      label: '教学质量',
+      icon: <GraduationCap className="w-5 h-5" />,
+      description: '讲课清晰度、教学方法',
+    },
+    {
+      id: 'workload',
+      label: '任务量',
+      icon: <FileText className="w-5 h-5" />,
+      description: '课业负担程度',
+    },
+    {
+      id: 'grading',
+      label: '给分友好度',
+      icon: <Award className="w-5 h-5" />,
+      description: '成绩评定宽松度',
+    },
+    {
+      id: 'learning',
+      label: '课堂收获',
+      icon: <Lightbulb className="w-5 h-5" />,
+      description: '知识获得与能力提升',
+    },
+    {
+      id: 'assessment',
+      label: '课程难度',
+      icon: <Scale className="w-5 h-5" />,
+      description: '考试内容与难度',
+    },
   ];
 
   const courseTags = {
@@ -74,26 +109,21 @@ export default function WriteReviewView() {
   };
 
   /* ================= 计算 ================= */
-  const hasUnratedDimensions = ratingDimensions.some(
-    (d) => !ratings[d.id] || ratings[d.id] === 0
-  );
-  const isReviewTooShort = reviewText.trim().length < 50;
+  const hasUnratedDimensions = ratingDimensions.some(d => !ratings[d.id] || ratings[d.id] === 0);
 
   const averageRating =
-    Object.values(ratings).filter((v) => v > 0).length === 0
+    Object.values(ratings).filter(v => v > 0).length === 0
       ? 0
       : Object.values(ratings).reduce((a, b) => a + b, 0) /
-        Object.values(ratings).filter((v) => v > 0).length;
+        Object.values(ratings).filter(v => v > 0).length;
 
   /* ================= 事件 ================= */
   const handleRatingChange = (id: string, value: number) => {
-    setRatings((prev) => ({ ...prev, [id]: value }));
+    setRatings(prev => ({ ...prev, [id]: value }));
   };
 
   const handleTagToggle = (tag: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
+    setSelectedTags(prev => (prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]));
   };
 
   const handleSaveDraft = () => {
@@ -110,7 +140,7 @@ export default function WriteReviewView() {
   };
 
   const handlePublish = () => {
-    if (hasUnratedDimensions || isReviewTooShort || !hasCourse) {
+    if (hasUnratedDimensions || !hasCourse) {
       setShowErrors(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
@@ -131,7 +161,6 @@ export default function WriteReviewView() {
             <div className="text-red-700 text-sm">
               {!hasCourse && <div>• 请先选择课程</div>}
               {hasUnratedDimensions && <div>• 请完成所有评分维度</div>}
-              {isReviewTooShort && <div>• 详细评价不少于 50 字</div>}
             </div>
           </div>
         )}
@@ -142,9 +171,12 @@ export default function WriteReviewView() {
             <div className="w-14 h-14 bg-blue-500 rounded-lg flex items-center justify-center">
               <BookOpen className="w-7 h-7 text-white" />
             </div>
-            <div>
-              <h2 className="text-lg">课程 ID：{courseId}</h2>
-              <p className="text-gray-500">（后续可根据 courseId 获取真实课程信息）</p>
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-medium text-gray-900">课程</h2>
+              <span className="text-gray-400">·</span>
+              <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700">
+                {courseName ?? `ID ${courseId}`}
+              </span>
             </div>
           </div>
         ) : (
@@ -173,14 +205,14 @@ export default function WriteReviewView() {
                 )}
               </div>
 
-              {ratingDimensions.map((d) => (
+              {ratingDimensions.map(d => (
                 <RatingDimension
                   key={d.id}
                   icon={d.icon}
                   label={d.label}
                   description={d.description}
                   value={ratings[d.id]}
-                  onChange={(v) => handleRatingChange(d.id, v)}
+                  onChange={v => handleRatingChange(d.id, v)}
                 />
               ))}
             </div>
@@ -210,10 +242,7 @@ export default function WriteReviewView() {
             </div>
 
             <div className="flex justify-between">
-              <button
-                onClick={handleSaveDraft}
-                className="px-6 py-3 border rounded-xl"
-              >
+              <button onClick={handleSaveDraft} className="px-6 py-3 border rounded-xl">
                 保存草稿
               </button>
 
@@ -229,9 +258,7 @@ export default function WriteReviewView() {
           {/* 右栏 */}
           <div className="bg-white rounded-xl border p-6 h-fit sticky top-24">
             <h3 className="mb-4">评价提示</h3>
-            <p className="text-gray-500 text-sm">
-              请基于真实体验，客观公正地进行评价。
-            </p>
+            <p className="text-gray-500 text-sm">请基于真实体验，客观公正地进行评价。</p>
           </div>
         </div>
       </main>

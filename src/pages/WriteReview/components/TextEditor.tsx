@@ -18,7 +18,7 @@ export function TextEditor({ value, onChange, maxLength = 500 }: TextEditorProps
       >
         <textarea
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={e => onChange(e.target.value)}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           maxLength={maxLength}
@@ -27,13 +27,9 @@ export function TextEditor({ value, onChange, maxLength = 500 }: TextEditorProps
           rows={8}
         />
       </div>
-      
+
       <div className="flex items-center justify-between mt-2 px-1">
-        <div className="text-gray-500">
-          {value.length > 0 && value.length < 50 && (
-            <span className="text-orange-600">建议至少输入50个字符</span>
-          )}
-        </div>
+        <div className="text-gray-500"></div>
         <div className={`${value.length >= maxLength ? 'text-red-600' : 'text-gray-500'}`}>
           {value.length} / {maxLength}
         </div>
