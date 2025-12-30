@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 
+
 interface SearchBarProps {
   searchQuery: string;
   setSearchQuery: (value: string) => void;
