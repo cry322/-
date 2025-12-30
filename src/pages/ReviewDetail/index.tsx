@@ -1,5 +1,5 @@
-﻿import { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+﻿﻿import { useEffect, useRef, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import './ReviewDetailPage.css';
 import reviewData from './review_data.json';
 
@@ -258,7 +258,7 @@ const ReviewDetailPage = () => {
       name: 'momo',
       date: '2025-08-18',
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=liufang',
-      content: '考试知识量确实比较大，但收获也很大。建议参考《心理学与生活》这本书。',
+      content: '考试知识量确实比较大，但收获也很大。建议参考《...》这本书。',
       likes: 5,
       replies: []
     }
@@ -305,6 +305,27 @@ const ReviewDetailPage = () => {
 
   return (
     <div className="review-detail-container">
+      {/* 面包屑导航 */}
+      <div className="breadcrumb-nav">
+        <div className="breadcrumb-content">
+          <Link to="/" className="breadcrumb-link">
+            首页
+          </Link>
+          <span className="breadcrumb-separator">/</span>
+          <Link to="/courses" className="breadcrumb-link">
+            课程库
+          </Link>
+          <span className="breadcrumb-separator">/</span>
+          <Link to={`/courses/${course.courseId}`} className="breadcrumb-link">
+            {course.name}
+          </Link>
+          <span className="breadcrumb-separator">/</span>
+          <span className="breadcrumb-current">
+            测评详情
+          </span>
+        </div>
+      </div>
+
       <div className="main-content">
         <div className="review-card">
           {/* 顶部课程信息 */}
