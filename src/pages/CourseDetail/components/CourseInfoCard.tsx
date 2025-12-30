@@ -36,7 +36,6 @@ export function CourseInfoCard({ courseId }: CourseInfoCardProps) {
         : "未知院系";
   const creditsText: string =
     typeof course.credits === "number" ? `${course.credits} 学分` : "学分未知";
-  const assessmentText: string = course.assessment || "暂无考核方式说明";
 
   let ratings: RatingItem[] = [];
   if (firstReview) {
@@ -119,7 +118,14 @@ export function CourseInfoCard({ courseId }: CourseInfoCardProps) {
 
       {/* Radar Chart */}
       <div className="py-4">
-        <RadarChart />
+        {ratings.length === 0 ? (
+          <div className="text-center text-gray-400 text-sm">暂无雷达图数据</div>
+        ) : (
+          <RadarChart
+            data={ratings.map((r) => r.stars / 5)}
+            labels={ratings.map((r) => r.label)}
+          />
+        )}
       </div>
 
       {/* Rating Categories */}
