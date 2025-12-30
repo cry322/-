@@ -1,10 +1,10 @@
 ﻿import { FilterSidebar } from './components/FilterSidebar';
 import { SearchBar } from './components/SearchBar';
 import { CourseTable } from './components/CourseTable';
-import { useState, useMemo } from 'react';
-import courseHeaderBg from '../../assets/course-back.jpg'; // 请根据实际路径调整
+import { useState, useMemo, useEffect } from 'react'; // 添加 useEffect
+import courseHeaderBg from '../../assets/course-back.jpg';
 import { Home, ChevronRight } from "lucide-react";
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'; // 添加 useNavigate
 
 interface Course {
   id: number;
@@ -15,7 +15,6 @@ interface Course {
   department: string;
   rating: number;
 }
-
 // 模拟课程数据
 const mockCourses = [
   { id: 2838360, courseNo: '2838360', courseName: '微观经济学', credits: 3, teacher: '高彧', department: '光华管理学院', rating: 5 },
@@ -73,12 +72,14 @@ const mockCourses = [
 ];
 
 export default function CourseList() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams(); // 改为可写，添加 setSearchParams
+  const navigate = useNavigate();
   
-  // 使用函数初始化，只在组件挂载时计算一次
-  const [searchQuery, setSearchQuery] = useState(() => {
-    return searchParams.get("search") || "";
-  });
+  // 从 URL 参数中获取搜索词，参数名为 'q'
+  const urlSearchQuery = searchParams.get('q') || '';
+  
+  // 搜索查询状态
+  const [searchQuery, setSearchQuery] = useState(urlSearchQuery);
   
   const [selectedCredits, setSelectedCredits] = useState('all');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
@@ -87,23 +88,79 @@ export default function CourseList() {
     field: keyof Course;
     direction: 'asc' | 'desc';
   } | null>(null);
-  
+
+  // 当 URL 参数变化时，更新搜索框的状态
+  useEffect(() => {
+    setSearchQuery(urlSearchQuery);
+  }, [urlSearchQuery]);
+
+  // 处理搜索查询的变化，更新 URL 参数
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    
+    // 如果查询不为空，更新 URL 参数
+    if (query.trim()) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set('q', query.trim());
+      setSearchParams(newParams, { replace: true });
+    } else {
+      // 如果查询为空，移除 q 参数
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('q');
+      setSearchParams(newParams, { replace: true });
+    }
+  };
+
+  // 处理搜索提交
+  const handleSearchSubmit = (query: string) => {
+    const trimmedQuery = query.trim();
+    setSearchQuery(trimmedQuery);
+    
+    if (trimmedQuery) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set('q', trimmedQuery);
+      setSearchParams(newParams, { replace: true });
+    } else {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('q');
+      setSearchParams(newParams, { replace: true });
+    }
+    
+    // 如果需要，可以在这里添加搜索提交后的其他逻辑
+    // 例如：滚动到搜索结果区域、显示搜索结果统计等
+  };
 
   // 筛选逻辑
-  const filteredCourses = courses.filter(course => {
-    const matchesSearch =
-      course.courseName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.teacher.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.courseNo.includes(searchQuery);
+  const filteredCourses = useMemo(() => {
+    return courses.filter(course => {
+      const query = searchQuery.toLowerCase();
+      
+      // 如果搜索词为空，显示所有课程
+      if (!query) {
+        const matchesCredits =
+          selectedCredits === 'all' || course.credits === parseInt(selectedCredits);
 
-    const matchesCredits =
-      selectedCredits === 'all' || course.credits === parseInt(selectedCredits);
+        const matchesDepartment =
+          selectedDepartment === 'all' || course.department === selectedDepartment;
 
-    const matchesDepartment =
-      selectedDepartment === 'all' || course.department === selectedDepartment;
+        return matchesCredits && matchesDepartment;
+      }
+      
+      // 否则，根据搜索词筛选
+      const matchesSearch =
+        course.courseName.toLowerCase().includes(query) ||
+        course.teacher.toLowerCase().includes(query) ||
+        course.courseNo.includes(query);
 
-    return matchesSearch && matchesCredits && matchesDepartment;
-  });
+      const matchesCredits =
+        selectedCredits === 'all' || course.credits === parseInt(selectedCredits);
+
+      const matchesDepartment =
+        selectedDepartment === 'all' || course.department === selectedDepartment;
+
+      return matchesSearch && matchesCredits && matchesDepartment;
+    });
+  }, [courses, searchQuery, selectedCredits, selectedDepartment]);
 
   // 排序逻辑
   const sortedCourses = useMemo(() => {
@@ -142,11 +199,18 @@ export default function CourseList() {
       return null;
     });
   };
-  
+
+  // 清空搜索
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete('q');
+    setSearchParams(newParams, { replace: true });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 面包屑导航 - 放在头部区域上面 */}
+      {/* 面包屑导航 */}
       <div className="max-w-7xl mx-auto px-4 pt-6 pb-2">
         <nav className="flex items-center text-sm">
           <Link 
@@ -161,7 +225,7 @@ export default function CourseList() {
         </nav>
       </div>
 
-      {/* 页面头部 - 使用背景图片 */}
+      {/* 页面头部 */}
       <div 
         className="relative text-white py-12 md:py-16"
         style={{
@@ -174,12 +238,29 @@ export default function CourseList() {
         <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
           <h1 className="text-3xl md:text-4xl font-bold mb-3">课程库</h1>
           <p className="text-xl text-gray-200">探索北大丰富课程，找到适合你的学习方向</p>
+          
+          {/* 显示当前搜索词 */}
+          {searchQuery && (
+            <div className="mt-4">
+              <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
+                <span className="mr-2">当前搜索:</span>
+                <span className="font-medium">{searchQuery}</span>
+                <button
+                  onClick={handleClearSearch}
+                  className="ml-2 p-1 hover:bg-white/20 rounded-full"
+                  title="清除搜索"
+                >
+                  <span className="text-xs">×</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
         
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/20"></div>
       </div>
 
-      {/* 原来的主要内容区域 */}
+      {/* 主要内容区域 */}
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* 筛选侧边栏 */}
@@ -196,11 +277,11 @@ export default function CourseList() {
           <main className="lg:w-3/4">
             <SearchBar
               searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
+              setSearchQuery={handleSearchChange}
               courses={courses}
             />
             
-            {/* 可以在这里添加一些快速筛选标签 */}
+            {/* 快速筛选标签 */}
             <div className="flex flex-wrap gap-2 mb-4 mt-4">
               <button
                 onClick={() => setSelectedCredits('all')}
@@ -237,23 +318,36 @@ export default function CourseList() {
                 </div>
                 <div className="text-center p-3 bg-green-50 rounded">
                   <div className="text-2xl font-bold text-green-600">
-                    {Math.max(...sortedCourses.map(c => c.rating))}
+                    {sortedCourses.length > 0 ? Math.max(...sortedCourses.map(c => c.rating)) : 0}
                   </div>
                   <div className="text-sm text-gray-600">最高评分</div>
                 </div>
                 <div className="text-center p-3 bg-purple-50 rounded">
                   <div className="text-2xl font-bold text-purple-600">
-                    {new Set(sortedCourses.map(c => c.department)).size}
+                    {sortedCourses.length > 0 ? new Set(sortedCourses.map(c => c.department)).size : 0}
                   </div>
                   <div className="text-sm text-gray-600">涉及院系</div>
                 </div>
                 <div className="text-center p-3 bg-yellow-50 rounded">
                   <div className="text-2xl font-bold text-yellow-600">
-                    {Math.max(...sortedCourses.map(c => c.credits))}
+                    {sortedCourses.length > 0 ? Math.max(...sortedCourses.map(c => c.credits)) : 0}
                   </div>
                   <div className="text-sm text-gray-600">最高学分</div>
                 </div>
               </div>
+              
+              {/* 搜索提示 */}
+              {searchQuery && sortedCourses.length === 0 && (
+                <div className="mt-4 p-3 bg-gray-50 rounded text-center">
+                  <p className="text-gray-600">未找到与 "<span className="font-medium">{searchQuery}</span>" 相关的课程</p>
+                  <button
+                    onClick={handleClearSearch}
+                    className="mt-2 text-blue-600 hover:underline text-sm"
+                  >
+                    清空搜索词，查看所有课程
+                  </button>
+                </div>
+              )}
             </div>
           </main>
         </div>

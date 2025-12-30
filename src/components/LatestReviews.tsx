@@ -14,51 +14,67 @@ interface Review {
 
 const reviews: Review[] = [
   {
-    id: '430171', // 课程号
-    courseName: '人类生存发展与核科学',
-    rating: 4,
-    comment: '课程内容非常容易理解，文科生也没太大理解难度。任务量小，可以刷分，挺难选的但据说补退选能蹲到。缺IV类通选的同学可冲！',
+    id: '1', // 测评id
+    courseName: '微观经济学',
+    rating: 5,
+    comment: '老师人美心善，课程深入浅出，值得一选。课程内容：先进行引入，接下来依次推进消费者理论、风险理论、生...',
     timestamp: '刚刚',
     isAnonymous: true
   },
   {
-    id: '1630079',
-    courseName: '心理学导论',
+    id: '2',
+    courseName: '民主的历史与现实',
     rating: 4,
-    comment: '课程知识密度极大，完全舍不得玩手机，全程着急记笔记。老师的措辞、语速、逻辑都让人极度舒适。',
+    comment: '这门课是国际关系学院的专业课，也是二类通识核心课。课程内容就是民主的历史与现实，包括早期民主、代议...',
     timestamp: '2小时前',
     isAnonymous: true
   },
   {
-    id: '1339180',
+    id: '3',
     courseName: '世界文化地理',
     rating: 4,
-    comment: '自然地理部分是高中地理知识，人文地理部分也不会太学术，对高中选科地理的同学相当友好。给分状况好，在四类通识课里选就完事。',
+    comment: '【课程任务】有一定数量的考勤，但任务量很小。每节课后会在教学网上发布10道对应的课程习题（填空和...',
     timestamp: '3小时前',
     isAnonymous: true
   },
   {
-    id: '3230020',
-    courseName: '政治学原理',
-    rating: 5,
-    comment: '伟大无需多言，mx老师yyds！内容涉及个人、集体、社会、国家、国际等多个话题，讲述基础理论和现实案例，关注时政和热点问题。',
+    id: '4',
+    courseName: '日本经济',
+    rating: 4,
+    comment: '【课程任务】记忆中似乎只有期中考试和期末考试，期中闭卷期末开卷，主要都是课上讲的知识，考察相对会比...',
     timestamp: '1天前',
     isAnonymous: true
   },
   {
-    id: '2838360',
-    courseName: '微观经济学',
-    rating: 5,
-    comment: '老师人美心善，课程深入浅出，值得一选。和nsd中微对比可以感受到老师真的很用心在打磨课堂内容，有很多有趣的小例子。',
+    id: '5',
+    courseName: '美索不达米亚艺术与文明',
+    rating: 4,
+    comment: '【课程任务】20%课堂考勤+60%图录作业+20%期末开卷考试。暑校的课堂考勤还是比较频繁的，七天大...',
     timestamp: '1天前',
     isAnonymous: true
   },
   {
-    id: '2939991',
-    courseName: '英美侵权法',
-    rating: 5,
-    comment: '老师讲案例会很有意思，助教和老师人很好。任务量超小，是既可以刷分也可以对侵权法有不少了解的好课。最后还是要夸夸超nice的老师和助教学长！',
+    id: '6',
+    courseName: '大学国文',
+    rating: 3,
+    comment: '【考核方式】：0.4的作业（两个老师分别一次作业）0.6的期末考试 【课堂】：dz每节课都去，但没怎么...',
     timestamp: '2天前',
+    isAnonymous: true
+  },
+  {
+    id: '7',
+    courseName: '心理学导论',
+    rating: 4,
+    comment: '【心理学导论】心导 毛利华 mlh dz得分【90，95】 通识课，两学分 【考核方式】：0.05被试（参加...',
+    timestamp: '3天前',
+    isAnonymous: true
+  },
+  {
+    id: '8',
+    courseName: '心理学导论',
+    rating: 4,
+    comment: '心理学导论/心导 毛利华 mlh 得分：【80,85） 一门从标题上看就非常有趣的好课。毛利华老师的授课...',
+    timestamp: '3天前',
     isAnonymous: true
   }
 ];
