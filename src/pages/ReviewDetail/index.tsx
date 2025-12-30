@@ -40,9 +40,11 @@ interface FullCourseData {
   reviews: ReviewData[];
 }
 
+// Use shared global declaration in custom.d.ts; no local augmentation here.
+
 const ReviewDetailPage = () => {
   const { id } = useParams<{ id: string }>();
-  const chartRef = useRef(null);
+  const chartRef = useRef<HTMLDivElement | null>(null);
   const [echartsLoaded, setEchartsLoaded] = useState(false);
   const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
   const [replyText, setReplyText] = useState('');
@@ -74,12 +76,13 @@ const ReviewDetailPage = () => {
   useEffect(() => {
     const loadECharts = async () => {
       try {
-        if (typeof window.echarts !== 'undefined') {
+        if (typeof window !== 'undefined' && typeof window.echarts !== 'undefined') {
           setEchartsLoaded(true);
           return;
         }
 
-        const echarts = await import('echarts');
+        const echartsModule = await import('echarts');
+        const echarts = (echartsModule as any).default || echartsModule;
         window.echarts = echarts;
         setEchartsLoaded(true);
       } catch (error) {
@@ -154,7 +157,8 @@ const ReviewDetailPage = () => {
       }
     };
 
-    myChart.setOption(option);
+    // 这里直接断言为 any，避免与 ECharts 类型定义的细节冲突
+    myChart.setOption(option as any);
 
     // 响应窗口大小变化
     const handleResize = () => {
