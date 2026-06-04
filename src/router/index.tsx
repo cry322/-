@@ -14,6 +14,10 @@ import HelpCenterPage from '../pages/HelpCenter';
 
 
 // 创建路由配置
+const basename = import.meta.env.BASE_URL === '/'
+  ? undefined
+  : import.meta.env.BASE_URL.replace(/\/$/, '');
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -81,6 +85,8 @@ const router = createBrowserRouter([
       </div>
     ),
   },
-]);
+], {
+  basename,
+});
 
 export default router;
